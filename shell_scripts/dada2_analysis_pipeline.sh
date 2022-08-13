@@ -14,17 +14,6 @@
 source ~/.bash_profile
 conda activate qiime2-2022.2
 
-project_name="Macrosteles-Edel"
-
-# The flash2 merge directory.
-flash_merge_dir="/home/AAFC-AAC/muirheadk/projects/${project_name}/pre_processing/merge30";
-
-# The flash2 output file suffix.
-flash_output_suffix=".cutadapt.trim.merge.extendedFrags.fastq";
-
-# The fastq list input file.
-fastq_list_file="/home/AAFC-AAC/muirheadk/projects/${project_name}/pre_processing/${project_name}_fastq_files.txt"
-
 # Dataset Metadata input file.
 dataset_metadata_file="/home/AAFC-AAC/muirheadk/projects/${project_name}/${project_name}_Metadata.txt"
 

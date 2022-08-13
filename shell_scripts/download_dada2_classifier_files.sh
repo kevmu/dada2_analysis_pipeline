@@ -21,7 +21,6 @@ echo "Unzip the sh_qiime_release_01.12.2017.zip file."
 unzip sh_qiime_release_01.12.2017.zip -d unite_20171201
 
 unite_dir="/export/home/AAFC-AAC/muirheadk/projects/classifiers/unite_20171201"
-
 cd ${unite_dir}
 
 # Import the sh_refs_qiime_ver7_99_01.12.2017.fasta FeatureData[Sequence].
@@ -32,7 +31,7 @@ qiime tools import \
  --output-path unite-ver7-99-seqs-01.12.2017.qza
 
 # Import the sh_taxonomy_qiime_ver7_99_01.12.2017.txt FeatureData[Taxonomy].
-echo "Importing the  sh_taxonomy_qiime_ver7_99_01.12.2017.txt FeatureData[Taxonomy]."
+echo "Importing the sh_taxonomy_qiime_ver7_99_01.12.2017.txt FeatureData[Taxonomy]."
 qiime tools import \
  --type FeatureData[Taxonomy] \
  --input-path sh_taxonomy_qiime_ver7_99_01.12.2017.txt \
