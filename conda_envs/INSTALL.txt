@@ -6,11 +6,17 @@ conda env create -n qiime2-2022.2 --file qiime2-2022.2-py38-linux-conda.yml
 conda activate qiime2-2022.2
 conda env export > qiime2-2022.2_env.yaml
 
+# Install using the qiime2-2022.2_env.yaml file.
+conda env create --file qiime2-2022.2_env.yaml 
+
 # The cutadapt conda environment.
 conda create --name cutadapt_env
 conda activate cutadapt_env
 conda install -c bioconda cutadapt
 conda env export > cutadapt_env.yaml
+
+# Install using the cutadapt_env.yaml file.
+conda env create --file cutadapt_env.yaml
 
 # The flash2 conda environment.
 conda create --name flash2_env
@@ -18,9 +24,14 @@ conda activate flash2_env
 conda install -c bioconda flash2
 conda env export > flash2_env.yaml
 
+# Install using the flash2_env.yaml file.
+conda env create --file flash2_env.yaml
+
 # The seqtk conda environment.
 conda create --name seqtk_env
 conda activate seqtk_env
 conda install -c bioconda seqtk
 conda env export > seqtk_env.yaml
 
+# Install using the seqtk_env.yaml file.
+conda env create --file seqtk_env.yaml
