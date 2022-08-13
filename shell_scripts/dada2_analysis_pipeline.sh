@@ -31,14 +31,6 @@ dada2_demux_file="${qiime_output_dir}/${project_name}_single-end-demux.qza"
 qiime_output_dir="/home/AAFC-AAC/muirheadk/projects/${project_name}/qiime2"
 mkdir -p $qiime_output_dir
 
-# Generate the manifest file for qiime2.
-echo "Generate the manifest file for qiime2."
-echo "sample-id,absolute-filepath,direction" >> ${fastq_manifest_infile};
-for i in $(cat ${fastq_list_file});
-do echo $i;
-echo -e "${i},${flash_merge_dir}/${i}${flash_output_suffix},forward" >> ${fastq_manifest_infile};
-done
-
 # Import the manifest input fileinto qiime demux format.
 echo "Import the manifest input fileinto qiime demux format."
 echo "qiime tools import\
