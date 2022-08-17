@@ -68,7 +68,7 @@ read_length=250
 # input_suffix=".cutadapt.trim.merge.extendedFrags.fastq"
 # output_suffix=".cutadapt.trim.merge.downsampled"
 
-find ${input_dir} -name "*.fastq.gz" -type f | sed 's/_R[1-2]_001\.fastq\.gz//g' | sort -V | uniq > ${fastq_list_file}
+find ${input_dir} -name "*.fastq.gz" -type f | sed 's/_R[1-2]_001\.fastq\.gz//g' | rev | cut -d '/' -f1 | rev | sort -V | uniq > ${fastq_list_file}
 
 for i in $(cat ${fastq_list_file}) \
 ; do cutadapt \
