@@ -14,6 +14,9 @@
 source ~/.bash_profile
 conda activate qiime2-2022.2
 
+# Project name.
+project_name="Macrosteles-Edel"
+
 # Dataset Metadata input file.
 dataset_metadata_file="/home/AAFC-AAC/muirheadk/projects/${project_name}/${project_name}_Metadata.txt"
 
