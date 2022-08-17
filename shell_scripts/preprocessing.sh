@@ -2,7 +2,7 @@
 
 #!/bin/bash
 #$ -S /bin/bash
-#$ -N townj_cutadapt
+#$ -N preprocessing
 #$ -j y
 #$ -cwd
 #$ -pe smp 8
@@ -10,29 +10,30 @@
 #source /home/AAFC-AAC/townj/miniconda3/etc/profile.d/conda.sh
 #conda activate qiime2-2021.2
 
-source ~/.bash_profile
+source ~/.bashrc
 conda activate cutadapt_env
 
-project_name="Macrosteles-Edel"
-
 # Cutadapt command configuration data.
-input_dir="/home/AAFC-AAC/muirheadk/projects/${project_name}/fastq"
+input_dir="/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel/fastq"
 
-preprocessing_dir="/home/AAFC-AAC/muirheadk/projects/${project_name}/pre_processing"
+output_dir="/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel"
+mkdir -p ${output_dir}
+
+preprocessing_dir="${output_dir}/pre_processing"
 mkdir -p ${preprocessing_dir}
 
 # The fastq list input file.
-fastq_list_file="${preprocessing_dir}/${project_name}_fastq_files.txt"
+fastq_list_file="${preprocessing_dir}/fastq_list_files.txt"
 
 # The qiime output directory.
-qiime_output_dir="/home/AAFC-AAC/muirheadk/projects/${project_name}/qiime2"
+qiime_output_dir="${output_dir}/qiime2"
 mkdir -p $qiime_output_dir
 
 # The manifest input file that lists the sample ids, path to the fastq files and direction.#Manifest file must be .csv with column headers: sample-id,absolute-filepath,direction
 #eg line: D01-01ppm2010_S10_L001,/home/AAFC-AAC/dumonceauxt/Topp_antifungal/pre_processing/downsampled/D01-01ppm2010_S10_L001.cutadapt.trim.merge.downsampled,forward
-fastq_manifest_infile="${qiime_output_dir}/${project_name}_Manifest.csv"
+fastq_manifest_infile="${qiime_output_dir}/fastq_sample_manifest.csv"
 
-cutadapt_dir="${preprocessing_dir}/cutadapt30"
+cutadapt_dir="${preprocessing_dir}/cutadapt"
 mkdir -p ${cutadapt_dir}
 
 adapter1_f="16S-515bf=GTGYCAGCMGCCGCGGTAA"
@@ -51,7 +52,7 @@ cutadapt_read1_suffix=".R1.cutadapt.fq"
 cutadapt_read2_suffix=".R2.cutadapt.fq"
 
 # Flash2 command configuration data.
-flash_merge_dir="${preprocessing_dir}/merge30";
+flash_merge_dir="${preprocessing_dir}/flash2_merge";
 mkdir -p ${flash_merge_dir}
 
 # The flash2 output file suffix.

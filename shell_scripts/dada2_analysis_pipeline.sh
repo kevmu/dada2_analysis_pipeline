@@ -11,79 +11,16 @@
 #conda activate qiime2-2021.2
 
 # Get the conda file path from source and activate the conda environment.
-source ~/.bash_profile
+source ~/.bashrc
 conda activate qiime2-2022.2
 
-# Project name.
-project_name="Macrosteles-Edel"
-
 # Dataset Metadata input file.
-dataset_metadata_file="/home/AAFC-AAC/muirheadk/projects/${project_name}/${project_name}_Metadata.txt"
+dataset_metadata_file="/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel/Macrosteles-Edel_Metadata.txt"
 
 # The Unite classifier database file.
-dada2_classifier_file="/home/AAFC-AAC/muirheadk/projects/classifiers/unite_20171201/unite-ver7-99-classifier-01.12.2017.qza"
+#dada2_classifier_file="/home/AAFC-AAC/muirheadk/projects/classifiers/unite_20171201/unite-ver7-99-classifier-01.12.2017.qza"
+dada2_classifier_file=""
 
-# The manifest input file that lists the sample ids, path to the fastq files and direction.#Manifest file must be .csv with column headers: sample-id,absolute-filepath,direction
-#eg line: D01-01ppm2010_S10_L001,/home/AAFC-AAC/dumonceauxt/Topp_antifungal/pre_processing/downsampled/D01-01ppm2010_S10_L001.cutadapt.trim.merge.downsampled,forward
-fastq_manifest_infile="${qiime_output_dir}/${project_name}_Manifest.csv"
-
-# The qiime2 import file.
-dada2_demux_file="${qiime_output_dir}/${project_name}_single-end-demux.qza"
-
-# The qiime output directory.
-qiime_output_dir="/home/AAFC-AAC/muirheadk/projects/${project_name}/qiime2"
-mkdir -p $qiime_output_dir
-
-# Import the manifest input fileinto qiime demux format.
-echo "Import the manifest input fileinto qiime demux format."
-echo "qiime tools import\
- --type 'SampleData[SequencesWithQuality]'\
- --input-path ${fastq_manifest_infile}\
- --output-path ${dada2_demux_file}\
- --input-format SingleEndFastqManifestPhred33"
- 
-qiime tools import\
- --type 'SampleData[SequencesWithQuality]'\
- --input-path ${fastq_manifest_infile}\
- --output-path ${dada2_demux_file}\
- --input-format SingleEndFastqManifestPhred33
- 
-dada2_representative_seqs_file="${qiime_output_dir}/${project_name}_rep-seqs-dada2.qza"
-dada2_rep_seqs_min_len_file="${qiime_output_dir}/${project_name}_rep-seqs-100bp.qza"
-dada2_table_file="${qiime_output_dir}/${project_name}_table-dada2.qza"
-dada2_denoising_stats_file="${qiime_output_dir}/${project_name}_stats-dada2.qza"
-
-dada2_table_min_len_file="${qiime_output_dir}/${project_name}_table-100bp.qza"
-dada2_table_min_len_filtered_file="${qiime_output_dir}/${project_name}_table-filtered.qza"
-
-dada2_taxonomy_file="${qiime_output_dir}/${project_name}_taxonomy.qza"
-
-dada2_rep_seqs_filtered_file="${qiime_output_dir}/${project_name}_rep-seqs-filtered.qza"
-
-# Plot files
-dada2_table_filtered_plot_file="${qiime_output_dir}/${project_name}_table-filtered.qzv"
-dada2_rep_seqs_plot_file="${qiime_output_dir}/${project_name}_rep-seqs-dada.qzv"
-dada2_taxonomy_plot_file="${qiime_output_dir}/${project_name}_taxonomy.qzv"
-dada2_taxa_bar_plot_file="${qiime_output_dir}/${project_name}_taxa-bar-plots.qzv"
-
-# Output directories
-dada2_stats_output_dir="${qiime_output_dir}/${project_name}_stats-dada-exported"
-dada2_rep_seqs_min_len_stats_output_dir="${qiime_output_dir}/${project_name}_rep-seqs-100bp-exported"
-dada2_rep_seqs_output_dir="${qiime_output_dir}/${project_name}_rep-seqs-exported"
-
-dada2_filtered_table_output_dir="${qiime_output_dir}/${project_name}_feature-table-filtered-exported"
-feature_table_biom_file="${dada2_filtered_table_output_dir}/feature-table.biom"
-feature_table_tsv_file="${dada2_filtered_table_output_dir}/${project_name}_feature-table.tsv"
-
-phyloseq_biom_file="${qiime_output_dir}/phyloseq.biom"
-
-dada2_taxonomy_output_dir="${qiime_output_dir}/${project_name}_taxonomy-exported"
-
-dada2_rep_seqs_filtered_dir="${qiime_output_dir}/${project_name}_rep-seqs-filtered-exported"
-
-
-taxonomy_tsv_file="${dada2_taxonomy_output_dir}/taxonomy.tsv"
-phyloseq_taxonomy_tsv_file="${dada2_taxonomy_output_dir}/phyloseq_taxonomy.tsv"
 
 # The number of threads to use in dada2.
 num_threads=10
@@ -99,6 +36,71 @@ min_sequence_length=100
 
 # Minimum number of samples to filter out features occuring only 1 sample using -p-min-samples. Use n > 1 (Default: 2)
 min_num_samples=2
+
+output_dir="/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel"
+mkdir -p $output_dir
+
+# The qiime output directory.
+qiime_output_dir="${output_dir}/qiime2"
+mkdir -p $qiime_output_dir
+
+# The manifest input file that lists the sample ids, path to the fastq files and direction.#Manifest file must be .csv with column headers: sample-id,absolute-filepath,direction
+#eg line: D01-01ppm2010_S10_L001,/home/AAFC-AAC/dumonceauxt/Topp_antifungal/pre_processing/downsampled/D01-01ppm2010_S10_L001.cutadapt.trim.merge.downsampled,forward
+fastq_manifest_infile="${qiime_output_dir}/fastq_file_manifest.csv"
+
+# The qiime2 import file.
+dada2_demux_file="${qiime_output_dir}/single_end_demux_dada2.qza"
+
+# Import the manifest input fileinto qiime demux format.
+echo "Import the manifest input file into qiime demux format."
+echo "qiime tools import\
+ --type 'SampleData[SequencesWithQuality]'\
+ --input-path ${fastq_manifest_infile}\
+ --output-path ${dada2_demux_file}\
+ --input-format SingleEndFastqManifestPhred33"
+ 
+qiime tools import\
+ --type 'SampleData[SequencesWithQuality]'\
+ --input-path ${fastq_manifest_infile}\
+ --output-path ${dada2_demux_file}\
+ --input-format SingleEndFastqManifestPhred33
+ 
+dada2_rep_seqs_file="${qiime_output_dir}/rep_seqs_dada2.qza"
+dada2_rep_seqs_min_len_file="${qiime_output_dir}/rep_seqs_${min_sequence_length}bp_dada2.qza"
+dada2_table_file="${qiime_output_dir}/table_dada2.qza"
+dada2_denoising_stats_file="${qiime_output_dir}/denoising_stats_dada2.qza"
+
+dada2_table_min_len_file="${qiime_output_dir}/min_length_table_${min_sequence_length}bp_dada2.qza"
+dada2_table_min_len_filtered_file="${qiime_output_dir}/min_length_${min_sequence_length}bp_filtered_table_dada2.qza"
+
+dada2_taxonomy_file="${qiime_output_dir}/taxonomy_dada2.qza"
+
+dada2_rep_seqs_filtered_file="${qiime_output_dir}/rep_seqs_filtered_dada2.qza"
+
+# Plot files
+dada2_table_filtered_plot_file="${qiime_output_dir}/filtered_table_plot_dada2.qzv"
+dada2_rep_seqs_plot_file="${qiime_output_dir}/rep_seqs_plot_dada2.qzv"
+dada2_taxonomy_plot_file="${qiime_output_dir}/taxonomy_plot_dada2.qzv"
+dada2_taxa_bar_plot_file="${qiime_output_dir}/taxa_bar_plots_dada2.qzv"
+
+# Output directories
+dada2_stats_output_dir="${qiime_output_dir}/stats_exported_dada2"
+dada2_rep_seqs_min_len_stats_output_dir="${qiime_output_dir}/rep_seqs_${min_sequence_length}bp_exported_dada2"
+dada2_rep_seqs_output_dir="${qiime_output_dir}/rep_seqs_exported_dada2"
+
+dada2_filtered_table_output_dir="${qiime_output_dir}/feature_table_filtered_exported"
+feature_table_biom_file="${dada2_filtered_table_output_dir}/feature_table.biom"
+feature_table_tsv_file="${dada2_filtered_table_output_dir}/feature_table.tsv"
+
+phyloseq_biom_file="${qiime_output_dir}/phyloseq.biom"
+
+dada2_taxonomy_output_dir="${qiime_output_dir}/taxonomy_exported_dada2"
+
+dada2_rep_seqs_filtered_dir="${qiime_output_dir}/rep_seqs_filtered_exported_dada2"
+
+
+taxonomy_tsv_file="${dada2_taxonomy_output_dir}/taxonomy.tsv"
+phyloseq_taxonomy_tsv_file="${dada2_taxonomy_output_dir}/phyloseq_taxonomy.tsv"
 
 echo "Running dada2 denoise-single...";
 echo "qiime dada2 denoise-single \
@@ -121,6 +123,7 @@ qiime dada2 denoise-single \
  --o-table ${dada2_table_file} \
  --o-denoising-stats ${dada2_denoising_stats_file}
  
+exit 0;
 
 qiime tools export --input-path ${dada2_denoising_stats_file} --output-path ${dada2_stats_output_dir}
 

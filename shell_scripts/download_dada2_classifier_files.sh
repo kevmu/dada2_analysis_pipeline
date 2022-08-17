@@ -39,8 +39,8 @@ echo "Starting download script...."
 
 # Get the conda file path from source and activate the conda environment.
 #source ~/.bash_profile
-#source ~/.bashrc
-source /home/muirheadk/miniconda3/etc/profile.d/conda.sh
+source ~/.bashrc
+#source /home/muirheadk/miniconda3/etc/profile.d/conda.sh
 conda activate qiime2-2022.2
 
 # echo $DATABASE_TYPE
