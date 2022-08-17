@@ -25,13 +25,9 @@ mkdir -p ${preprocessing_dir}
 # The fastq list input file.
 fastq_list_file="${preprocessing_dir}/fastq_list_files.txt"
 
-# The qiime output directory.
-qiime_output_dir="${output_dir}/qiime2"
-mkdir -p $qiime_output_dir
-
 # The manifest input file that lists the sample ids, path to the fastq files and direction.#Manifest file must be .csv with column headers: sample-id,absolute-filepath,direction
 #eg line: D01-01ppm2010_S10_L001,/home/AAFC-AAC/dumonceauxt/Topp_antifungal/pre_processing/downsampled/D01-01ppm2010_S10_L001.cutadapt.trim.merge.downsampled,forward
-fastq_manifest_infile="${qiime_output_dir}/fastq_sample_manifest.csv"
+fastq_manifest_infile="${preprocessing_dir}/fastq_sample_manifest.csv"
 
 cutadapt_dir="${preprocessing_dir}/cutadapt"
 mkdir -p ${cutadapt_dir}

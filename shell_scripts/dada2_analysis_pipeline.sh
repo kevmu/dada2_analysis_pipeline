@@ -14,6 +14,10 @@
 source ~/.bashrc
 conda activate qiime2-2022.2
 
+# The manifest input file that lists the sample ids, path to the fastq files and direction.#Manifest file must be .csv with column headers: sample-id,absolute-filepath,direction
+#eg line: D01-01ppm2010_S10_L001,/home/AAFC-AAC/dumonceauxt/Topp_antifungal/pre_processing/downsampled/D01-01ppm2010_S10_L001.cutadapt.trim.merge.downsampled,forward
+fastq_manifest_infile="/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel/pre_processing/fastq_file_manifest.csv"
+
 # Dataset Metadata input file.
 dataset_metadata_file="/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel/Macrosteles-Edel_Metadata.txt"
 
@@ -43,10 +47,6 @@ mkdir -p $output_dir
 # The qiime output directory.
 qiime_output_dir="${output_dir}/qiime2"
 mkdir -p $qiime_output_dir
-
-# The manifest input file that lists the sample ids, path to the fastq files and direction.#Manifest file must be .csv with column headers: sample-id,absolute-filepath,direction
-#eg line: D01-01ppm2010_S10_L001,/home/AAFC-AAC/dumonceauxt/Topp_antifungal/pre_processing/downsampled/D01-01ppm2010_S10_L001.cutadapt.trim.merge.downsampled,forward
-fastq_manifest_infile="${qiime_output_dir}/fastq_file_manifest.csv"
 
 # The qiime2 import file.
 dada2_demux_file="${qiime_output_dir}/single_end_demux_dada2.qza"
