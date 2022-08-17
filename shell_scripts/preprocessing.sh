@@ -81,7 +81,7 @@ for i in $(cat ${fastq_list_file}) \
  -G ${adapter1_r} \
  -A ${adapter2_r} \
  -m ${min_read_length} \
- -n $(num_remove_adapters) \
+ -n ${num_remove_adapters} \
  --discard-untrimmed \
  -q ${quality_cutoff} \
  --pair-filter=both \
