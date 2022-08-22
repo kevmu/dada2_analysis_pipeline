@@ -16,14 +16,14 @@ conda activate qiime2-2022.2
 
 # The manifest input file that lists the sample ids, path to the fastq files and direction.#Manifest file must be .csv with column headers: sample-id,absolute-filepath,direction
 #eg line: D01-01ppm2010_S10_L001,/home/AAFC-AAC/dumonceauxt/Topp_antifungal/pre_processing/downsampled/D01-01ppm2010_S10_L001.cutadapt.trim.merge.downsampled,forward
-fastq_manifest_infile="/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel/pre_processing/fastq_file_manifest.csv"
+fastq_manifest_infile="/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel/pre_processing/fastq_sample_manifest.csv"
 
 # Dataset Metadata input file.
 dataset_metadata_file="/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel/Macrosteles-Edel_Metadata.txt"
 
-# The Unite classifier database file.
+# The dada2 classifier database file.
 #dada2_classifier_file="/home/AAFC-AAC/muirheadk/projects/classifiers/unite_20171201/unite-ver7-99-classifier-01.12.2017.qza"
-dada2_classifier_file=""
+dada2_classifier_file="/home/AAFC-AAC/muirheadk/projects/classifiers/silva_16S_138_99_515_806/silva-138-99-classifier-515-806.qza"
 
 
 # The number of threads to use in dada2.
@@ -58,13 +58,17 @@ echo "qiime tools import\
  --input-path ${fastq_manifest_infile}\
  --output-path ${dada2_demux_file}\
  --input-format SingleEndFastqManifestPhred33"
+
+#exit 0;
  
-qiime tools import\
- --type 'SampleData[SequencesWithQuality]'\
- --input-path ${fastq_manifest_infile}\
- --output-path ${dada2_demux_file}\
- --input-format SingleEndFastqManifestPhred33
+#qiime tools import\
+# --type 'SampleData[SequencesWithQuality]'\
+# --input-path ${fastq_manifest_infile}\
+# --output-path ${dada2_demux_file}\
+# --input-format SingleEndFastqManifestPhred33
  
+#exit 0;
+
 dada2_rep_seqs_file="${qiime_output_dir}/rep_seqs_dada2.qza"
 dada2_rep_seqs_min_len_file="${qiime_output_dir}/rep_seqs_${min_sequence_length}bp_dada2.qza"
 dada2_table_file="${qiime_output_dir}/table_dada2.qza"
@@ -89,10 +93,12 @@ dada2_rep_seqs_min_len_stats_output_dir="${qiime_output_dir}/rep_seqs_${min_sequ
 dada2_rep_seqs_output_dir="${qiime_output_dir}/rep_seqs_exported_dada2"
 
 dada2_filtered_table_output_dir="${qiime_output_dir}/feature_table_filtered_exported"
-feature_table_biom_file="${dada2_filtered_table_output_dir}/feature_table.biom"
-feature_table_tsv_file="${dada2_filtered_table_output_dir}/feature_table.tsv"
+feature_table_biom_file="${dada2_filtered_table_output_dir}/feature-table.biom"
+feature_table_tsv_file="${dada2_filtered_table_output_dir}/feature-table.tsv"
 
 phyloseq_biom_file="${qiime_output_dir}/phyloseq.biom"
+
+phyloseq_tsv_file="${qiime_output_dir}/phyloseq.tsv"
 
 dada2_taxonomy_output_dir="${qiime_output_dir}/taxonomy_exported_dada2"
 
@@ -113,17 +119,17 @@ echo "qiime dada2 denoise-single \
  --o-table ${dada2_table_file} \
  --o-denoising-stats ${dada2_denoising_stats_file}"
 
-qiime dada2 denoise-single \
- --p-n-threads ${num_threads} \
- --verbose \
- --i-demultiplexed-seqs ${dada2_demux_file} \
- --p-trim-left ${trim_left} \
- --p-trunc-len ${trunc_len} \
- --o-representative-sequences ${dada2_rep_seqs_file} \
- --o-table ${dada2_table_file} \
- --o-denoising-stats ${dada2_denoising_stats_file}
+#qiime dada2 denoise-single \
+# --p-n-threads ${num_threads} \
+# --verbose \
+# --i-demultiplexed-seqs ${dada2_demux_file} \
+# --p-trim-left ${trim_left} \
+# --p-trunc-len ${trunc_len} \
+# --o-representative-sequences ${dada2_rep_seqs_file} \
+# --o-table ${dada2_table_file} \
+# --o-denoising-stats ${dada2_denoising_stats_file}
  
-exit 0;
+#exit 0;
 
 qiime tools export --input-path ${dada2_denoising_stats_file} --output-path ${dada2_stats_output_dir}
 
@@ -133,20 +139,33 @@ qiime feature-table filter-seqs \
     --i-data ${dada2_rep_seqs_file} \
     --m-metadata-file ${dada2_rep_seqs_file} \
     --p-where "length(sequence) > ${min_sequence_length}" \
-    --o-filtered-data ${dada2_rep_seqs_min_len_file}
-	
+    --o-filtered-data ${dada2_rep_seqs_min_len_file} \
+
+
+#exit 0;
+
 #generates a list of sequences > 100 bp - want just those ones
 qiime tools export \
     --input-path ${dada2_rep_seqs_min_len_file} \
     --output-path ${dada2_rep_seqs_min_len_stats_output_dir}
-	
-#gets the sequences you want
-echo "SampleID" >> "${dada2_rep_seqs_min_len_stats_output_dir}/sequences_to_keep.txt"
-grep ">" \
-"${dada2_rep_seqs_min_len_stats_output_dir}/dna-sequences.fasta" \
-| sed 's/>//' \
->> "${dada2_rep_seqs_min_len_stats_output_dir}/sequences_to_keep.txt"
 
+#exit 0;
+
+dada2_min_len_read_ids_file="${dada2_rep_seqs_min_len_stats_output_dir}/sequences_to_keep.txt"
+if [ ! -s $dada2_min_len_read_ids_file ]; 
+then	
+	#gets the sequences you want
+	echo "SampleID" >> ${dada2_min_len_read_ids_file}
+	grep ">" \
+	"${dada2_rep_seqs_min_len_stats_output_dir}/dna-sequences.fasta" \
+	| sed 's/>//' \
+	>> ${dada2_min_len_read_ids_file}
+else
+	echo "Have sequences_to_keep.txt";
+
+fi
+
+#exit 0;
 
 #then manually add column header SampleID using nano; save changes
 
@@ -159,13 +178,22 @@ grep ">" \
 ##folder after: JJRLC_rep-seqs-100bp-exported 
 ##foler before: JJRLC_rep-seqs-dada2-exported
 
+#Filter the table using your txt file
 
+#table now only has ASV sequences >100bp
+
+qiime feature-table filter-features \
+--i-table ${dada2_table_file} \
+--m-metadata-file ${dada2_min_len_read_ids_file} \
+--o-filtered-table ${dada2_table_min_len_file}
+
+#exit 0;
 #Filter out features occuring only in one sample; can change to other filters using -p min-samples. Often include things that are in at least 5% of the total number of samples
 qiime feature-table filter-features \
   --i-table ${dada2_table_min_len_file} \
   --p-min-samples ${min_num_samples} \
   --o-filtered-table ${dada2_table_min_len_filtered_file}
-  
+#exit 0;  
   
 #add metadata; create file using nano: JJRLC_Metadata.txt using the illumina sample sheet - has sample names and all associated metadata
 qiime feature-table summarize \
@@ -177,9 +205,13 @@ qiime feature-table summarize \
 
 #to view results, export to a tab-delimited table- can download and view in excel:
 qiime tools export \
- --input-path ${dada2_table_min_len_filtered_file} \
- --output-path ${dada2_filtered_table_output_dir}
+--input-path ${dada2_table_min_len_filtered_file} \
+--output-path ${dada2_filtered_table_output_dir}
 
+echo "biom convert \
+ -i ${feature_table_biom_file} \
+ -o ${feature_table_tsv_file} \
+ --to-tsv"
 biom convert \
  -i ${feature_table_biom_file} \
  -o ${feature_table_tsv_file} \
@@ -187,16 +219,28 @@ biom convert \
 
 #make rep-seqs file - view using qiime2view.org
 qiime tools export \
-  ${dada2_rep_seqs_file} \
-  --output-dir ${dada2_filtered_table_output_dir}
+--input-path ${dada2_rep_seqs_file} \
+--output-path ${dada2_filtered_table_output_dir}
 
 qiime feature-table tabulate-seqs \
  --i-data ${dada2_rep_seqs_file} \
  --o-visualization ${dada2_rep_seqs_plot_file}
 
-qiime feature-classifier classify-sklearn \
-  --i-classifier ${dada2_classifier_file} \
-  --i-reads ${dada2_rep_seqs_file} \
+if [ ! -s $dada2_taxonomy_file ];
+then
+	echo "qiime feature-classifier classify-sklearn \
+	--i-classifier ${dada2_classifier_file} \
+	--i-reads ${dada2_rep_seqs_file} \
+	--o-classification ${dada2_taxonomy_file}"
+
+	qiime feature-classifier classify-sklearn \
+	--i-classifier ${dada2_classifier_file} \
+	--i-reads ${dada2_rep_seqs_file} \
+	--o-classification  ${dada2_taxonomy_file}
+
+else
+	echo "taxonomy classification file exists."
+fi
 
 #start here 20201-06-29
 qiime metadata tabulate \
@@ -212,7 +256,7 @@ qiime taxa barplot \
   --i-table ${dada2_table_min_len_filtered_file} \
   --i-taxonomy ${dada2_taxonomy_file} \
   --m-metadata-file ${dataset_metadata_file} \
-  --o-visualization /${dada2_taxa_bar_plot_file}
+  --o-visualization ${dada2_taxa_bar_plot_file}
 
 qiime feature-table filter-seqs \
  --i-data ${dada2_rep_seqs_file}  \
@@ -220,15 +264,20 @@ qiime feature-table filter-seqs \
  --o-filtered-data ${dada2_rep_seqs_filtered_file}
 
 qiime tools export \
- ${dada2_rep_seqs_filtered_file} \
- --output-dir ${dada2_rep_seqs_filtered_dir} 
+--input-path ${dada2_rep_seqs_filtered_file} \
+--output-path ${dada2_rep_seqs_filtered_dir} 
  
 #Alpha Diversity
 #Prepare for phyloseq - can do some statistics and visualization in R - also calculate statistics below using qiime2 and export to tsv or csv for viewing and analysis in Excel
 #phyloseq
 #Change taxonomy.tsv colnames to #OTUID, taxonomy, confidence, save as phyloseq_taxonomy.tsv
-echo -e "#OTUID"\t"taxonomy"\t"confidence" >> ${taxonomy_tsv_file}
-sed -i 's/[a-z]__//g' ${taxonomy_tsv_file} > ${phyloseq_taxonomy_tsv_file}
+if [ ! -s $phyloseq_taxonomy_tsv_file ];
+then
+	echo -e "#OTUID\ttaxonomy\tconfidence" >> ${phyloseq_taxonomy_tsv_file}
+	tail -n+2 < ${taxonomy_tsv_file} | sed -i 's/[a-z]__//g' >> ${phyloseq_taxonomy_tsv_file}
+else
+	echo "phyloseq_taxonomy.tsv already created."
+fi
 
 biom add-metadata \
 -i ${feature_table_biom_file} \
@@ -237,6 +286,19 @@ biom add-metadata \
 --sc-separated taxonomy \
 --sample-metadata-fp ${dataset_metadata_file}
 
+
+echo "biom convert \
+ -i ${phyloseq_biom_file} \
+ -o ${phyloseq_tsv_file} \
+ --to-tsv"
+biom convert \
+ -i ${phyloseq_biom_file} \
+ -o ${phyloseq_tsv_file} \
+ --to-tsv
+
+
+echo "The dada2_analysis_pipeline.sh script finished."
+exit 0;
 ##transfer ITS_phyloseq.biom to folder R/Topp-soil-ITS/Data on local computer
 ##analyze using phyloseq
 ##folder structure in R/Topp-soil-ITS: 3 folders: Data; Figures; R_code
@@ -384,20 +446,4 @@ biom add-metadata \
 
 # awk '$3 == "True"' \
  # /home/AAFC-AAC/dumonceauxt/Topp_antifungal/qiime2/ITS-ancom_trt-exported/ancom.tsv \
-# > /home/AAFC-AAC/dumonceauxt/Topp_antifungal/qiime2/ITS-ancom_trt-exported/JJRLC_TRUE_ancom.tsv
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
+# > /home/AAFC-AAC/dumonceauxt/Topp_antifungal/qiime2/ITS-ancom_trt-exported/JJRLC_TRUE_ancom.tsv 
