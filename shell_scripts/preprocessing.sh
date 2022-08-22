@@ -60,6 +60,9 @@ mkdir -p ${flash_merge_dir}
 # The flash2 output file suffix.
 flash_output_suffix=".cutadapt.trim.merge"
 
+# The manifest file fastq file suffix.
+manifest_fastq_suffix=".cutadapt.trim.merge.extendedFrags.fastq";
+
 fragment_length=240
 fragment_length_stddev=50
 read_length=250
@@ -106,7 +109,7 @@ ${cutadapt_dir}/${i}${cutadapt_read2_suffix} \
 -d ${flash_merge_dir} \
 -o ${i}${flash_output_suffix} \
  ; done
- 
+
 # conda activate seqtk_env
 
 # for i in $(cat ${fastq_list_file}) \
@@ -121,6 +124,6 @@ echo "Generate the manifest file for qiime2."
 echo "sample-id,absolute-filepath,direction" >> ${fastq_manifest_infile};
 for i in $(cat ${fastq_list_file});
 do echo $i;
-echo -e "${i},${flash_merge_dir}/${i}${flash_output_suffix},forward" >> ${fastq_manifest_infile};
+echo -e "${i},${flash_merge_dir}/${i}${manifest_fastq_suffix},forward" >> ${fastq_manifest_infile};
 done
 
