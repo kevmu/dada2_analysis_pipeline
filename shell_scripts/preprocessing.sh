@@ -14,9 +14,9 @@ source ~/.bashrc
 conda activate cutadapt_env
 
 # Cutadapt command configuration data.
-input_dir="/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel/fastq"
+input_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22/fastq_files"
 
-output_dir="/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel"
+output_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22"
 mkdir -p ${output_dir}
 
 preprocessing_dir="${output_dir}/pre_processing"

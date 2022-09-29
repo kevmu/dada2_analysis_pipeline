@@ -19,19 +19,19 @@ conda activate qiime2-2022.2
 # The manifest input file that lists the sample ids, path to the fastq files and direction.
 #Manifest file must be .csv with column headers: sample-id,absolute-filepath,direction
 #eg line: D01-01ppm2010_S10_L001,/home/AAFC-AAC/dumonceauxt/Topp_antifungal/pre_processing/downsampled/D01-01ppm2010_S10_L001.cutadapt.trim.merge.downsampled,forward
-fastq_manifest_infile="/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel/pre_processing/fastq_sample_manifest.csv"
+fastq_manifest_infile="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22/pre_processing/fastq_sample_manifest.csv"
 
 # Dataset Metadata input file.
-dataset_metadata_file="/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel/Macrosteles-Edel_Metadata.txt"
+dataset_metadata_file="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22/macrosteles_edel_22_metadata.txt"
 
 ## The dada2 classifier database file.
 # Unite ITS classifier Database.
 #dada2_classifier_file="/home/AAFC-AAC/muirheadk/projects/classifiers/unite_20171201/unite-ver7-99-classifier-01.12.2017.qza"
 # SILVA 16S classifier database file.
-dada2_classifier_file="/home/AAFC-AAC/muirheadk/projects/classifiers/silva_16S_138_99_515_806/silva-138-99-classifier-515-806.qza"
+dada2_classifier_file="/home/AGR.GC.CA/muirheadk/dada2_databases/silva_16S_138_99_515_806/classifiers/silva_16S_138_99_515_806/silva-138-99-classifier-515-806.qza"
 
 # The output directory to write output files.
-output_dir="/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel"
+output_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22"
 mkdir -p $output_dir
 
 # The number of threads to use in dada2.
@@ -72,7 +72,7 @@ then
     
  else
     dada2_demux_filename=$(basename $dada2_demux_file)
-    echo "The ${dada2_demux_filename} has already been created. Skipping!!!"
+    echo "The ${dada2_demux_filename} file has already been created. Skipping to next set of commands!!!"
  fi
  
 ## The qiime2 dada2 Files.
@@ -148,32 +148,33 @@ then
 else
     echo "The dada2 denoise-single output files have already been created."
     dada2_rep_seqs_filename=$(basename $dada2_rep_seqs_file)
-    echo "The ${dada2_rep_seqs_filename} has already been created. Skipping!!!"
+    echo "The ${dada2_rep_seqs_filename} file has already been created. Skipping to next set of commands!!!"
     dada2_table_filename=$(basename $dada2_table_file)
-    echo "The ${dada2_table_filename} has already been created. Skipping!!!"
+    echo "The ${dada2_table_filename} file has already been created. Skipping to next set of commands!!!"
     dada2_denoising_stats_filename=$(basename $dada2_denoising_stats_file)
-    echo "The ${dada2_denoising_stats_filename} has already been created. Skipping!!!"
+    echo "The ${dada2_denoising_stats_filename} file has already been created. Skipping to next set of commands!!!"
     
 fi
 
-
-if [ ! -s $ ];
+# Convert the dada2 denoising statistics file to a tab-delimited file.
+dada2_stats_tsv_file="${dada2_stats_output_dir}/stats.tsv"
+if [ ! -s $dada2_stats_tsv_file ];
 then
-echo "qiime tools export --input-path ${dada2_denoising_stats_file} --output-path ${dada2_stats_output_dir}"
-qiime tools export --input-path ${dada2_denoising_stats_file} --output-path ${dada2_stats_output_dir}
+    echo "qiime tools export --input-path ${dada2_denoising_stats_file} --output-path ${dada2_stats_output_dir}"
+    qiime tools export --input-path ${dada2_denoising_stats_file} --output-path ${dada2_stats_output_dir}
 else
-    filename=$(basename $file)
-    echo "The ${filename} has already been created. Skipping!!!"
+    dada2_stats_tsv_filename=$(basename $dada2_stats_tsv_file)
+    echo "The ${dada2_stats_tsv_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 # Creating the dada2 representative sequences minimum length filtered file.
-#Remove seqeunces less than 100bp
+# Remove seqeunces less than 100bp
 if [ ! -s $dada2_rep_seqs_min_len_file ];
 then
     echo "qiime feature-table filter-seqs \
     --i-data ${dada2_rep_seqs_file} \
     --m-metadata-file ${dada2_rep_seqs_file} \
-    --p-where "length(sequence) > ${min_sequence_length}" \
+    --p-where \"length(sequence) > ${min_sequence_length}\" \
     --o-filtered-data ${dada2_rep_seqs_min_len_file}"
     qiime feature-table filter-seqs \
     --i-data ${dada2_rep_seqs_file} \
@@ -182,7 +183,7 @@ then
     --o-filtered-data ${dada2_rep_seqs_min_len_file}
 else
     dada2_rep_seqs_min_len_filename=$(basename $dada2_rep_seqs_min_len_file)
-    echo "The ${dada2_rep_seqs_min_len_filename} has already been created. Skipping!!!"
+    echo "The ${dada2_rep_seqs_min_len_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 # Export dna-sequences file.
@@ -198,7 +199,7 @@ then
     --output-path ${dada2_rep_seqs_min_len_stats_output_dir}
 else
     dada2_rep_seqs_min_len_filename=$(basename $dada2_min_len_dna_sequences_file)
-    echo "The ${dada2_rep_seqs_min_len_filename} has already been created. Skipping!!!"
+    echo "The ${dada2_rep_seqs_min_len_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 dada2_min_len_read_ids_file="${dada2_rep_seqs_min_len_stats_output_dir}/sequences_to_keep.txt"
@@ -212,13 +213,13 @@ then
 	>> ${dada2_min_len_read_ids_file}
 else
     dada2_min_len_read_ids_filename=$(basename $dada2_min_len_read_ids_file)
-    echo "The ${dada2_min_len_read_ids_filename} has already been created. Skipping!!!"
+    echo "The ${dada2_min_len_read_ids_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 
-# Creating the dada2 minimum lenth filtered table file.
-#Filter the table using your txt file
-#table now only has ASV sequences >100bp
+# Creating the dada2 minimum length filtered table file.
+# Filter the table using your txt file
+# table now only has ASV sequences >100bp
 if [ ! -s $dada2_table_min_len_file ];
 then
     echo "qiime feature-table filter-features \
@@ -231,7 +232,7 @@ then
     --o-filtered-table ${dada2_table_min_len_file}
 else
     dada2_table_min_len_filename=$(basename $dada2_table_min_len_file)
-    echo "The ${dada2_table_min_len_filename} has already been created. Skipping!!!"
+    echo "The ${dada2_table_min_len_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 # Creating the dada2 minimum length filtered table file.
@@ -248,7 +249,7 @@ then
     --o-filtered-table ${dada2_table_min_samples_filtered_file}
 else
     dada2_table_min_samples_filtered_filename=$(basename $dada2_table_min_samples_filtered_file)
-    echo "The ${dada2_table_min_samples_filtered_filename} has already been created. Skipping!!!"
+    echo "The ${dada2_table_min_samples_filtered_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 # Creating the dada2 filtered table plot file for visualization.
@@ -264,12 +265,12 @@ then
      --o-visualization ${dada2_table_filtered_plot_file}
 else
     dada2_table_filtered_plot_filename=$(basename $dada2_table_filtered_plot_file)
-    echo "The ${dada2_table_filtered_plot_filename} has already been created. Skipping!!!"
+    echo "The ${dada2_table_filtered_plot_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 #can visualize results of qzv file using qiime2view.org
 # Creating .
-if [ ! -s $ ];
+if [ ! -s $feature_table_biom_file ];
 then
     echo "qiime tools export \
     --input-path ${dada2_table_min_samples_filtered_file} \
@@ -277,9 +278,10 @@ then
     qiime tools export \
     --input-path ${dada2_table_min_samples_filtered_file} \
     --output-path ${dada2_filtered_table_output_dir}
+
 else
-    filename=$(basename $file)
-    echo "The ${filename} has already been created. Skipping!!!"
+    feature_table_biom_filename=$(basename $feature_table_biom_file)
+    echo "The ${feature_table_biom_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 # Converting the feature table biom file to a tsv file.
@@ -296,7 +298,7 @@ then
 
 else
     feature_table_tsv_filename=$(basename $feature_table_tsv_file)
-    echo "The ${feature_table_tsv_file} is already created. Skipping!!!"
+    echo "The ${feature_table_tsv_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 
@@ -312,7 +314,7 @@ then
      --o-visualization ${dada2_rep_seqs_plot_file}
 else
     dada2_rep_seqs_plot_filename=$(basename $dada2_rep_seqs_plot_file)
-    echo "The ${dada2_rep_seqs_plot_file} is already created. Skipping!!!"
+    echo "The ${dada2_rep_seqs_plot_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 # Classifying the taxonomy for each ASV using dada2 classifier.
@@ -329,7 +331,7 @@ then
 	--o-classification ${dada2_taxonomy_file}
 else
     dada2_taxonomy_filename=$(basename $dada2_taxonomy_file)
-    echo "The ${dada2_taxonomy_filename} has already been created. Skipping!!!"
+    echo "The ${dada2_taxonomy_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 # Creating the dada2 taxonomy plot file for vizualization.
@@ -343,11 +345,11 @@ then
       --o-visualization ${dada2_taxonomy_plot_file}
 else
     dada2_taxonomy_plot_filename=$(basename $dada2_taxonomy_plot_file)
-    echo "The ${dada2_taxonomy_plot_filename} has already been created. Skipping!!!"
+    echo "The ${dada2_taxonomy_plot_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 #
-if [ ! -s $ ];
+if [ ! -s $taxonomy_tsv_file ];
 then
     echo "qiime tools export \
       --input-path ${dada2_taxonomy_file} \
@@ -356,9 +358,8 @@ then
       --input-path ${dada2_taxonomy_file} \
       --output-path ${dada2_taxonomy_output_dir}
 else
-#    dada2_taxonomy_plot_filename=$(basename $dada2_taxonomy_plot_file)
-#    echo "The ${dada2_taxonomy_plot_filename} has already been created. Skipping!!!"
-    echo "The ${} has already been created. Skipping!!!"
+    taxonomy_tsv_filename=$(basename $taxonomy_tsv_file)
+    echo "The ${taxonomy_tsv_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 # Generate the dada2 taxonomy bar plot file for visualization.
@@ -376,7 +377,7 @@ then
       --o-visualization ${dada2_taxa_bar_plot_file}
 else
     dada2_taxa_bar_plot_filename=$(basename $dada2_taxa_bar_plot_file)
-    echo "The ${dada2_taxa_bar_plot_filename} has already been created. Skipping!!!"
+    echo "The ${dada2_taxa_bar_plot_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 # Create the filtered dada2 representative sequences file.
@@ -392,11 +393,12 @@ then
      --o-filtered-data ${dada2_rep_seqs_filtered_file}
 else
     dada2_rep_seqs_filtered_filename=$(basename $dada2_rep_seqs_filtered_file)
-    echo "The ${dada2_rep_seqs_filtered_filename} has already been created. Skipping!!!"
+    echo "The ${dada2_rep_seqs_filtered_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
-# Create the taxonomy tsv file.
-if [ ! -s $taxonomy_tsv_file ];
+# Create the dada2 representative filtered DNA sequences file.
+dada2_rep_seqs_dna_sequences_file="${dada2_rep_seqs_filtered_dir}/dna-sequences.fasta"
+if [ ! -s $dada2_rep_seqs_dna_sequences_file ];
 then
     echo "qiime tools export \
     --input-path ${dada2_rep_seqs_filtered_file} \
@@ -405,9 +407,12 @@ then
     --input-path ${dada2_rep_seqs_filtered_file} \
     --output-path ${dada2_rep_seqs_filtered_dir}
 else
-    taxonomy_tsv_filename=$(basename $taxonomy_tsv_file)
-    echo "The ${taxonomy_tsv_filename} has already been created. Skipping!!!"
+    dada2_rep_seqs_dna_sequences_filename=$(basename $dada2_rep_seqs_dna_sequences_file)
+    echo "The ${dada2_rep_seqs_dna_sequences_filename} file has already been created. Skipping to next set of commands!!!"
 fi
+
+#echo $taxonomy_tsv_file
+#exit 0;
 
 #Alpha Diversity
 #Prepare for phyloseq - can do some statistics and visualization in R - also calculate statistics below using qiime2 and export to tsv or csv for viewing and analysis in Excel
@@ -416,10 +421,10 @@ fi
 if [ ! -s $phyloseq_taxonomy_tsv_file ];
 then
 	echo -e "#OTUID\ttaxonomy\tconfidence" >> ${phyloseq_taxonomy_tsv_file}
-	tail -n+2 < ${taxonomy_tsv_file} | sed -i 's/[a-z]__//g' >> ${phyloseq_taxonomy_tsv_file}
+	tail -n+2 < ${taxonomy_tsv_file} | sed 's/[a-z]__//g' >> ${phyloseq_taxonomy_tsv_file}
 else
     phyloseq_taxonomy_tsv_filename=$(basename $phyloseq_taxonomy_tsv_file)
-    echo "The ${phyloseq_taxonomy_tsv_filename} has already been created. Skipping!!!"
+    echo "The ${phyloseq_taxonomy_tsv_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 # Generate the phyloseq abundance count biom file.
@@ -439,7 +444,7 @@ then
     --sample-metadata-fp ${dataset_metadata_file}
 else
     phyloseq_abund_biom_filename=$(basename $phyloseq_abund_biom_file)
-    echo "The ${phyloseq_abund_biom_filename} has already been created. Skipping!!!"
+    echo "The ${phyloseq_abund_biom_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 # Converting the phyloseq abundance count table from biom to tsv.
@@ -455,7 +460,19 @@ then
     --to-tsv
 else
     phyloseq_abund_tsv_filename=$(basename $phyloseq_abund_tsv_file)
-    echo "The ${phyloseq_abund_tsv_filename} has already been created. Skipping!!!"
+    echo "The ${phyloseq_abund_tsv_filename} file has already been created. Skipping to next set of commands!!!"
+fi
+
+
+# Generate the dada2 species taxonomy file.
+species_taxonomy_tsv_file="${dada2_taxonomy_output_dir}/data2_species_taxonomy.tsv"
+if [ ! -s $species_taxonomy_tsv_file ];
+then
+    echo -e "#OTUID\ttaxonomy\tconfidence" >> ${species_taxonomy_tsv_file}
+    grep "s__" < ${taxonomy_tsv_file} >> ${species_taxonomy_tsv_file}
+else
+    species_taxonomy_tsv_filename=$(basename $species_taxonomy_tsv_file)
+    echo "The ${species_taxonomy_tsv_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
 echo "The dada2_analysis_pipeline.sh script has finished."

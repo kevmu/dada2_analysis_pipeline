@@ -1,4 +1,10 @@
 #!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --time=01:00:00
+#SBATCH --mem=1G
+#SBATCH --partition=cpu2019
 
 ### Program for downloading 16S rRNA or ITS fasta files for qiime feature-classifier for dada2.
 
@@ -39,8 +45,10 @@ echo "Starting download script...."
 
 # Get the conda file path from source and activate the conda environment.
 #source ~/.bash_profile
-source ~/.bashrc
+#source ~/.bashrc
+
 #source /home/muirheadk/miniconda3/etc/profile.d/conda.sh
+source /home/AGR.GC.CA/muirheadk/miniconda3/etc/profile.d/conda.sh
 conda activate qiime2-2022.2
 
 # echo $DATABASE_TYPE
