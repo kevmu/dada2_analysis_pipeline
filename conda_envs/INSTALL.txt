@@ -1,37 +1,69 @@
-# Instructions on how to install the conda environments from scratch and how to export the environment for use.
+## Instructions for installing conda.
 
-# The qiime conda environment.
+# Installing Miniconda3
+wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.12.0-Linux-x86_64.sh
+sh Miniconda3-py39_4.12.0-Linux-x86_64.sh -b -p ~/miniconda3
+
+## Instructions on how to install the conda environments from scratch and how to export the environment for use.
+
+## Install the qiime conda environment.
+
+# Option 1: Install the qiime conda environment from scratch.
 wget https://data.qiime2.org/distro/core/qiime2-2022.2-py38-linux-conda.yml  
 conda env create -n qiime2-2022.2 --file qiime2-2022.2-py38-linux-conda.yml
 conda activate qiime2-2022.2
+
+# Exporting qiime conda environment as a yaml file. (Optional)
 conda env export > qiime2-2022.2_env.yaml
 
-# Install using the qiime2-2022.2_env.yaml file.
-conda env create --file qiime2-2022.2_env.yaml 
+## OR
 
-# The cutadapt conda environment.
+# Option 2: Install the qiime conda environment using the qiime2-2022.2_env.yaml file.
+conda env create --file dada2_analysis_pipeline/conda_envs/qiime2-2022.2_env.yaml 
+
+## Install the cutadapt conda environment.
+
+# Option 1: Install the cutadapt conda environment from scratch
 conda create --name cutadapt_env
 conda activate cutadapt_env
 conda install -c bioconda cutadapt
+
+# Exporting cutadapt conda environment as a yaml file. (Optional)
 conda env export > cutadapt_env.yaml
 
-# Install using the cutadapt_env.yaml file.
-conda env create --file cutadapt_env.yaml
+## OR
 
-# The flash2 conda environment.
+# Option 2: Install the cutadapt conda environment using the cutadapt_env.yaml file.
+conda env create --file dada2_analysis_pipeline/conda_envs/cutadapt_env.yaml
+
+## Install the flash2 conda environment.
+
+# Option 1: Install the flash2 conda environment from scratch
 conda create --name flash2_env
 conda activate flash2_env
 conda install -c bioconda flash2
-conda env export > flash2_env.yaml
 
-# Install using the flash2_env.yaml file.
+# Exporting flash2 conda environment as a yaml file. (Optional)
+conda env export > dada2_analysis_pipeline/conda_envs/flash2_env.yaml
+
+## OR
+
+# Option 2: Install the flash2 conda environment using the flash2_env.yaml file.
 conda env create --file flash2_env.yaml
 
-# The seqtk conda environment.
+## Install the seqtk conda environment.
+
+# Option 1: Install the seqtk conda environment from scratch.
 conda create --name seqtk_env
 conda activate seqtk_env
 conda install -c bioconda seqtk
+
+# Exporting seqtk conda environment as a yaml file. (Optional)
 conda env export > seqtk_env.yaml
 
-# Install using the seqtk_env.yaml file.
-conda env create --file seqtk_env.yaml
+## OR
+
+# Option 2: Install the seqtk conda environment using the seqtk_env.yaml file.
+conda env create --file dada2_analysis_pipeline/conda_envs/seqtk_env.yaml
+
+
