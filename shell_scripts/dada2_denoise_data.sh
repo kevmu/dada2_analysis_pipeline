@@ -16,21 +16,24 @@
 source ~/.bashrc
 conda activate qiime2-2022.2
 
-# The manifest input file that lists the sample ids, path to the fastq files and direction.
-#Manifest file must be .csv with column headers: sample-id,absolute-filepath,direction
-#eg line: D01-01ppm2010_S10_L001,/home/AAFC-AAC/dumonceauxt/Topp_antifungal/pre_processing/downsampled/D01-01ppm2010_S10_L001.cutadapt.trim.merge.downsampled,forward
-fastq_manifest_infile="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22/pre_processing/fastq_sample_manifest.csv"
+## The qiime2 dada2 denoise-single.
+# The number of threads to use in dada2.
+num_threads=10
+
+# These seqs have already been trimmed/truncated so those parameters are 0.
+trim_left=0
+trunc_len=0
 
 # The output directory to write output files.
 output_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22"
 mkdir -p $output_dir
 
-# The number of threads to use in dada2.
-num_threads=10
+preprocessing_dir="${output_dir}/pre_processing"
 
-#These seqs have already been trimmed/truncated so those parameters are 0
-trim_left=0
-trunc_len=0
+# The manifest input file that lists the sample ids, path to the fastq files and direction.
+#Manifest file must be .csv with column headers: sample-id,absolute-filepath,direction
+#eg line: D01-01ppm2010_S10_L001,/home/AAFC-AAC/dumonceauxt/Topp_antifungal/pre_processing/downsampled/D01-01ppm2010_S10_L001.cutadapt.trim.merge.downsampled,forward
+fastq_manifest_infile="${preprocessing_dir}/fastq_sample_manifest.csv"
 
 # The qiime output directory.
 qiime_output_dir="${output_dir}/qiime2"

@@ -115,7 +115,12 @@ then
 	 --i-reference-reads silva-138-99-seqs-515-806.qza \
 	 --i-reference-taxonomy silva-138-99-tax-515-806.qza \
 	 --o-classifier silva-138-99-classifier-515-806.qza
-	 
+
+    echo "The SILVA dada2 classifier database file is ready for use.";
+    echo "Please use the following path for the classifier database file in the dada2_analysis_pipeline.sh shell script."
+    echo "${silva_dir}/silva-138-99-classifier-515-806.qza"
+    exit 0;
+    
 elif [[ "${DATABASE_TYPE}" ==  "ITS_Unite" ]];
 then
 	## UNITE ITS fasta.
@@ -152,6 +157,12 @@ then
 	 --i-reference-reads unite-ver7-99-seqs-01.12.2017.qza \
 	 --i-reference-taxonomy unite-ver7-99-tax-01.12.2017.qza \
 	 --o-classifier unite-ver7-99-classifier-01.12.2017.qza
+  
+    echo "The UNITE dada2 classifier database file is ready for use.";
+    echo "Please use the following path for the classifier database file in the dada2_analysis_pipeline.sh shell script."
+    echo "${unite_dir}/unite-ver7-99-classifier-01.12.2017.qza"
+    exit 0;
+    
 fi
 
 

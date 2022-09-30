@@ -19,6 +19,39 @@ input_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22/fastq_files
 output_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22"
 mkdir -p ${output_dir}
 
+## Cutadapt program parameters.
+adapter1_f="16S-515bf=GTGYCAGCMGCCGCGGTAA"
+adapter2_f="16S-515bfR=TTACCGCGGCKGCTGRCAC"
+adapter1_r="16S-806r=GGACTACHVGGGTWTCTAAT"
+adapter2_r="16S-806rR=ATTAGAWACCCBDGTAGTCC"
+
+#adapter1_f="ITSf1=CTTGGTCATTTAGAGGAAGTAA"
+#adapter2_f="ITS2R=GCATCGATGAAGAACGCAGC"
+#adapter1_r="ITS2=GCTGCGTTCTTCATCGATGC"
+#adapter2_r="ITSf1R=TTACTTCCTCTAAATGACCAAG"
+
+min_read_length=100
+num_remove_adapters=2
+quality_cutoff=30
+
+read1_suffix="_R1_001.fastq.gz"
+read2_suffix="_R2_001.fastq.gz"
+
+cutadapt_read1_suffix=".R1.cutadapt.fq"
+cutadapt_read2_suffix=".R2.cutadapt.fq"
+
+## Flash2 program parameters.
+
+# The flash2 output file suffix.
+flash_output_suffix=".cutadapt.trim.merge"
+
+# The manifest file fastq file suffix.
+manifest_fastq_suffix=".cutadapt.trim.merge.extendedFrags.fastq";
+
+fragment_length=240
+fragment_length_stddev=50
+read_length=250
+
 preprocessing_dir="${output_dir}/pre_processing"
 mkdir -p ${preprocessing_dir}
 
@@ -32,40 +65,9 @@ fastq_manifest_infile="${preprocessing_dir}/fastq_sample_manifest.csv"
 cutadapt_dir="${preprocessing_dir}/cutadapt"
 mkdir -p ${cutadapt_dir}
 
-adapter1_f="16S-515bf=GTGYCAGCMGCCGCGGTAA"
-adapter2_f="16S-515bfR=TTACCGCGGCKGCTGRCAC"
-adapter1_r="16S-806r=GGACTACHVGGGTWTCTAAT"
-adapter2_r="16S-806rR=ATTAGAWACCCBDGTAGTCC"
-
-#adapter1_f="ITSf1=CTTGGTCATTTAGAGGAAGTAA"
-#adapter2_f="ITS2R=GCATCGATGAAGAACGCAGC"
-#adapter1_r="ITS2=GCTGCGTTCTTCATCGATGC"
-#adapter2_r="ITSf1R=TTACTTCCTCTAAATGACCAAG"
-
-
-min_read_length=100
-num_remove_adapters=2
-quality_cutoff=30
-
-read1_suffix="_R1_001.fastq.gz"
-read2_suffix="_R2_001.fastq.gz"
-
-cutadapt_read1_suffix=".R1.cutadapt.fq"
-cutadapt_read2_suffix=".R2.cutadapt.fq"
-
 # Flash2 command configuration data.
 flash_merge_dir="${preprocessing_dir}/flash2_merge";
 mkdir -p ${flash_merge_dir}
-
-# The flash2 output file suffix.
-flash_output_suffix=".cutadapt.trim.merge"
-
-# The manifest file fastq file suffix.
-manifest_fastq_suffix=".cutadapt.trim.merge.extendedFrags.fastq";
-
-fragment_length=240
-fragment_length_stddev=50
-read_length=250
 
 ## If downsampling.
 # downsampled_dir="${preprocessing_dir}/downsampled"

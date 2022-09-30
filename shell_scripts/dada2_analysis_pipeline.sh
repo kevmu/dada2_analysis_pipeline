@@ -25,15 +25,15 @@ dataset_metadata_file="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22
 # SILVA 16S classifier database file.
 dada2_classifier_file="/home/AGR.GC.CA/muirheadk/dada2_databases/silva_16S_138_99_515_806/classifiers/silva_16S_138_99_515_806/silva-138-99-classifier-515-806.qza"
 
-# The output directory to write output files.
-output_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22"
-mkdir -p $output_dir
-
 # Minimum length of sequences in bps to remove within the sequence length filtering step.
 min_sequence_length=100
 
 # Minimum number of samples to filter out features occuring only 1 sample using -p-min-samples. Use n > 1 (Default: 2)
 min_num_samples=2
+
+# The output directory to write output files.
+output_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22"
+mkdir -p $output_dir
 
 # The qiime output directory.
 qiime_output_dir="${output_dir}/qiime2"
@@ -77,7 +77,6 @@ feature_table_tsv_file="${dada2_filtered_table_output_dir}/feature-table.tsv"
 dada2_taxonomy_output_dir="${qiime_output_dir}/taxonomy_exported_dada2"
 taxonomy_tsv_file="${dada2_taxonomy_output_dir}/taxonomy.tsv"
 phyloseq_taxonomy_tsv_file="${dada2_taxonomy_output_dir}/phyloseq_taxonomy.tsv"
-
 
 # Phyloseq abundance files.
 phyloseq_abund_biom_file="${qiime_output_dir}/phyloseq.biom"
