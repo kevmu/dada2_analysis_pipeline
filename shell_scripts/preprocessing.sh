@@ -129,3 +129,5 @@ do echo $i;
 echo -e "${i},${flash_merge_dir}/${i}${manifest_fastq_suffix},forward" >> ${fastq_manifest_infile};
 done
 
+echo "The prepocessing.sh script has finished."
+

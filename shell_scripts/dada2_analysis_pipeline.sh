@@ -23,7 +23,8 @@ dataset_metadata_file="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22
 # Unite ITS classifier Database.
 #dada2_classifier_file="/home/AAFC-AAC/muirheadk/projects/classifiers/unite_20171201/unite-ver7-99-classifier-01.12.2017.qza"
 # SILVA 16S classifier database file.
-dada2_classifier_file="/home/AGR.GC.CA/muirheadk/dada2_databases/silva_16S_138_99_515_806/classifiers/silva_16S_138_99_515_806/silva-138-99-classifier-515-806.qza"
+#dada2_classifier_file="/home/AGR.GC.CA/muirheadk/dada2_databases/silva_16S_138_99_515_806/classifiers/silva_16S_138_99_515_806/silva-138-99-classifier-515-806.qza"
+dada2_classifier_file="/home/AGR.GC.CA/muirheadk/classifiers/silva_16S_138_99_515_806/silva-138-99-classifier-515-806.qza"
 
 # Minimum length of sequences in bps to remove within the sequence length filtering step.
 min_sequence_length=100
@@ -32,7 +33,7 @@ min_sequence_length=100
 min_num_samples=2
 
 # The output directory to write output files.
-output_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22"
+output_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22_test"
 mkdir -p $output_dir
 
 # The qiime output directory.
@@ -129,13 +130,13 @@ fi
 
 dada2_min_len_read_ids_file="${dada2_rep_seqs_min_len_stats_output_dir}/sequences_to_keep.txt"
 if [ ! -s $dada2_min_len_read_ids_file ]; 
-then	
-	#gets the sequences you want
-	echo "SampleID" >> ${dada2_min_len_read_ids_file}
-	grep ">" \
-	${dada2_min_len_dna_sequences_file} \
-	| sed 's/>//' \
-	>> ${dada2_min_len_read_ids_file}
+then		
+    #gets the sequences you want
+    echo "SampleID" >> ${dada2_min_len_read_ids_file}
+    grep ">" \
+    ${dada2_min_len_dna_sequences_file} \
+    | sed 's/>//' \
+    >> ${dada2_min_len_read_ids_file}
 else
     dada2_min_len_read_ids_filename=$(basename $dada2_min_len_read_ids_file)
     echo "The ${dada2_min_len_read_ids_filename} file has already been created. Skipping to next set of commands!!!"
