@@ -403,5 +403,7 @@ fi
 
 echo "The dada2_analysis_pipeline.sh script has finished."
 
+python ../python_scripts/merge_phyloseq_abund_tax.py --phyloseq_abund_infile ${phyloseq_abund_tsv_file} --phyloseq_tax_infile ${phyloseq_taxonomy_tsv_file} --output_dir ${dada2_taxonomy_output_dir}
+
 exit 0;
 
