@@ -20,15 +20,37 @@ output_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22"
 mkdir -p ${output_dir}
 
 ## Cutadapt program parameters.
+
+# 16S 515/806 adapters.
 adapter1_f="16S-515bf=GTGYCAGCMGCCGCGGTAA"
 adapter2_f="16S-515bfR=TTACCGCGGCKGCTGRCAC"
 adapter1_r="16S-806r=GGACTACHVGGGTWTCTAAT"
 adapter2_r="16S-806rR=ATTAGAWACCCBDGTAGTCC"
 
+# 16S 515/926 adapters.
+#adapter1_f="16S-515bf=GTGYCAGCMGCCGCGGTAA"
+#adapter2_f="16S-515bfR=TTACCGCGGCKGCTGRCAC"
+#adapter1_r="16S-926r=CCGYCAATTYMTTTRAGTTT"
+#adapter2_r="16S-926rR=AAACTYAAAKRAATTGRCGG"
+
+# ITS adapters.
 #adapter1_f="ITSf1=CTTGGTCATTTAGAGGAAGTAA"
 #adapter2_f="ITS2R=GCATCGATGAAGAACGCAGC"
 #adapter1_r="ITS2=GCTGCGTTCTTCATCGATGC"
 #adapter2_r="ITSf1R=TTACTTCCTCTAAATGACCAAG"
+
+# cpn60 H279/H1612 adapters.
+# Janet uses cpn60 H279/H1612 for R1.
+#adapter1_f="H279bf=GANNNNGCNGGNGAYGGNACNACNACN"
+#adapter2_f="H279bfR=NGTNGTNGTNCCRTCNCCNGCNNNNTC"
+#adapter1_r="H1612r=GTSGTSGTRCCGTCRCCNGCNNNNTC"
+#adapter2_r="H1612rR=GANNNNGCNGGYGACGGYACSACSAC"
+
+# cpn60_H280_H1613 adapters.
+#adapter1_f="H280bf=AARGCNCCNGGNTTYGGNGANMRNMR"
+#adapter2_f="H280bfR=YKNYKNTCNCCRAANCCNGGNGCYTT"
+#adapter1_r="H1613r=CGRCGRTCRCCGAAGCCSGGNGCCTT"
+#adapter2_r="H1613rR=AAGGCNCCSGGCTTCGGYGAYCGYCG"
 
 min_read_length=100
 num_remove_adapters=2
@@ -80,6 +102,9 @@ mkdir -p ${flash_merge_dir}
 # output_suffix=".cutadapt.trim.merge.downsampled"
 
 find ${input_dir} -name "*.fastq.gz" -type f | sed 's/_R[1-2]_001\.fastq\.gz//g' | rev | cut -d '/' -f1 | rev | sort -V | uniq > ${fastq_list_file}
+
+#find ${input_dir} -name "*.fastq.gz" -type f | sed 's/${read1_suffix}\|${read2_suffix}//g' | rev | cut -d '/' -f1 | rev | sort -V | uniq > ${fastq_list_file}
+
 
 for i in $(cat ${fastq_list_file}) \
 ; do cutadapt \
