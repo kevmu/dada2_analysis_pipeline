@@ -8,59 +8,20 @@
 #$ -e dada2_analysis_pipeline.err
 #$ -pe smp 10
 
-### Generate amplicon sequence variants (ASVs) using DADA2
+### Use the dada2 denoising software for error correction before ASV calling.
 
-source /home/AAFC-AAC/dumonceauxt/miniconda3/etc/profile.d/conda.sh
-conda activate qiime2-2021.2
+#source /home/AAFC-AAC/dumonceauxt/miniconda3/etc/profile.d/conda.sh
+#conda activate dada2_denoise-2021.2
 
 # Get the conda file path from source and activate the conda environment.
 source ~/.bashrc
 conda activate qiime2-2022.2
 
 # The metadata input file of the project.
-metadata_infile="/Users/kevin.muirhead/Desktop/Macrosteles_Microbiome_Metadata.txt"
+metadata_infile="/export/home/AAFC-AAC/muirheadk/multi_target_project/dada2_analysis_pipeline/shell_scripts/fastq_sample_manifest.csv"
 
-# Make sure that the input field separator for newlines is a newline character '\n'.
-IFS=$'\n'
+## The qiime2 dada2 denoise-single parameters.
 
-# Get the header line of the metadata file.
-header=$(head -n+1 $metadata_infile);
-
-# Get the column index for the sample ids from the header line.
-sample_id_index=$(echo $header | sed -n $'1s/\t/\\\n/gp' | grep -in 'sample' | cut -d':' -f1);
-echo $sample_id_index;
-
-# Checking if a project column exists.
-if [[ -z $sample_id_index ]];
-then
-    echo "Please make sure that you have the word 'sample' in the header for the sample_id. i.e. #SampleID.";
-    exit 0;
-fi
-
-# Get the column index for the project from the header line.
-project_index=$(echo $header | sed -n $'1s/\t/\\\n/gp' | grep -in 'project' | cut -d':' -f1);
-echo $project_index;
-
-# Checking if a project column exists.
-if [[ -z $project_index ]];
-then
-    echo "Please make sure that you have the word 'project' in the header for the project_name. i.e. project, Project, PROJECT, project_name.";
-    exit 0;
-fi
-
-# Get the column index for the target from the header line.
-target_index=$(echo $header | sed -n $'1s/\t/\\\n/gp' | grep -in 'target' | cut -d':' -f1);
-echo $target_index;
-
-# Checking if a target column exists.
-if [[ -z $target_index ]];
-then
-    echo "Please make sure that you have the word 'target' in the header for the project_name. i.e. target, Target, TARGET, target_name.";
-    exit 0;
-fi
-
-
-## The qiime2 dada2 denoise-single.
 # The number of threads to use in dada2.
 num_threads=10
 
@@ -68,11 +29,13 @@ num_threads=10
 trim_left=0
 trunc_len=0
 
-#####
 ## The output directory to write output files.
-output_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22"
-mkdir -p $output_dir
+output_dir="/export/home/AAFC-AAC/muirheadk/multi_target_project/sample_dataset"
 
+# Create the output directory if it doesn't already exist.
+mkdir -p ${output_dir}
+
+# The pre_processing directory.
 preprocessing_dir="${output_dir}/pre_processing"
 
 ## The manifest input file that lists the sample ids, path to the fastq files and direction.
@@ -80,13 +43,15 @@ preprocessing_dir="${output_dir}/pre_processing"
 ##eg line: D01-01ppm2010_S10_L001,/home/AAFC-AAC/dumonceauxt/Topp_antifungal/pre_processing/downsampled/D01-01ppm2010_S10_L001.cutadapt.trim.merge.downsampled,forward
 fastq_manifest_infile="${preprocessing_dir}/fastq_sample_manifest.csv"
 
+## The qiime dada2 denoise output directory.
+dada2_denoise_output_dir="${output_dir}/dada2_denoise"
+mkdir -p $dada2_denoise_output_dir
 
-## The qiime output directory.
-qiime_output_dir="${output_dir}/qiime2"
-mkdir -p $qiime_output_dir
+## The dada2_denoise import file.
+dada2_demux_file="${dada2_denoise_output_dir}/single_end_demux_dada2.qza"
 
-## The qiime2 import file.
-dada2_demux_file="${qiime_output_dir}/single_end_demux_dada2.qza"
+## The dada2_denoise import file.
+dada2_demux_file="${dada2_denoise_output_dir}/single_end_demux_dada2.qza"
 
 ## Import the manifest input file into qiime demux format.
 if [ ! -s $dada2_demux_file ];
@@ -109,13 +74,13 @@ then
     echo "The ${dada2_demux_filename} file has already been created. Skipping to next set of commands!!!"
  fi
 
-## The qiime2 dada2 Files.
-dada2_rep_seqs_file="${qiime_output_dir}/rep_seqs_dada2.qza"
-dada2_table_file="${qiime_output_dir}/table_dada2.qza"
-dada2_denoising_stats_file="${qiime_output_dir}/denoising_stats_dada2.qza"
+## The dada2_denoise dada2 Files.
+dada2_rep_seqs_file="${dada2_denoise_output_dir}/rep_seqs_dada2.qza"
+dada2_table_file="${dada2_denoise_output_dir}/table_dada2.qza"
+dada2_denoising_stats_file="${dada2_denoise_output_dir}/denoising_stats_dada2.qza"
 
 # Output directories
-dada2_stats_output_dir="${qiime_output_dir}/stats_exported_dada2"
+dada2_stats_output_dir="${dada2_denoise_output_dir}/stats_exported_dada2"
 
 # Run the dada2 denoise-single command to obtain the.
 if [ ! -s  $dada2_rep_seqs_file ] && [  ! -s $dada2_table_file ] && [ ! -s $dada2_denoising_stats_file ];
@@ -164,12 +129,54 @@ else
     echo "The ${dada2_stats_tsv_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
+exit 0; 
+
+# Make sure that the input field separator for newlines is a newline character '\n'.
+IFS=$'\n'
+
+# Get the header line of the metadata file.
+header=$(head -n+1 $metadata_infile);
+
+# Get the column index for the sample ids from the header line.
+sample_id_index=$(echo $header | sed -n $'1s/\t/\\\n/gp' | grep -in 'sample' | cut -d':' -f1);
+echo $sample_id_index;
+
+# Checking if a project column exists.
+if [[ -z $sample_id_index ]];
+then
+    echo "Please make sure that you have the word 'sample' in the header for the sample_id. i.e. #SampleID.";
+    exit 0;
+fi
+
+# Get the column index for the project from the header line.
+project_index=$(echo $header | sed -n $'1s/\t/\\\n/gp' | grep -in 'project' | cut -d':' -f1);
+echo $project_index;
+
+# Checking if a project column exists.
+if [[ -z $project_index ]];
+then
+    echo "Please make sure that you have the word 'project' in the header for the project_name. i.e. project, Project, PROJECT, project_name.";
+    exit 0;
+fi
+
+# Get the column index for the target from the header line.
+target_index=$(echo $header | sed -n $'1s/\t/\\\n/gp' | grep -in 'target' | cut -d':' -f1);
+echo $target_index;
+
+# Checking if a target column exists.
+if [[ -z $target_index ]];
+then
+    echo "Please make sure that you have the word 'target' in the header for the project_name. i.e. target, Target, TARGET, target_name.";
+    exit 0;
+fi
+
+
 # Make a file of samples ids for each project.
 for project_name in $(tail -n+2 $metadata_infile | tr '\t' ',' | cut -d ',' -f $project_index | sort -V | uniq | sed 's/ /_/g');
 do
     echo $project_name;
     echo "${project_name}_sample_ids.txt";
-    echo "#SampleID" > "${qiime_output_dir}/${project_name}_sample_ids.txt"
+    echo "#SampleID" > "${dada2_denoise_output_dir}/${project_name}_sample_ids.txt"
 
 done
 
@@ -188,7 +195,7 @@ do
     echo "${project_name}_sample_ids.txt";
     
     ## Distribute based on project name.
-    sample_ids_list_file="${qiime_output_dir}/${project_name}_sample_ids.txt"
+    sample_ids_list_file="${dada2_denoise_output_dir}/${project_name}_sample_ids.txt"
     echo $sample_id >> ${sample_ids_list_file}
 
 done
@@ -197,9 +204,9 @@ done
 for project_name in $(tail -n+2 $metadata_infile | tr '\t' ',' | cut -d ',' -f $project_index | sort -V | uniq | sed 's/ /_/g');
 do
     echo $project_name;
-    sample_ids_list_file="${qiime_output_dir}/${project_name}_sample_ids.txt"
-    project_name_table_file="${qiime_output_dir}/${project_name}_filtered_table.qza"
-    project_name_rep_seqs_file="${qiime_output_dir}/${project_name}_rep_seqs.qza"
+    sample_ids_list_file="${dada2_denoise_output_dir}/${project_name}_sample_ids.txt"
+    project_name_table_file="${dada2_denoise_output_dir}/${project_name}_filtered_table.qza"
+    project_name_rep_seqs_file="${dada2_denoise_output_dir}/${project_name}_rep_seqs.qza"
 
     # Get the filtered table based on the sample_ids for the project.
     echo "qiime feature-table filter-samples \

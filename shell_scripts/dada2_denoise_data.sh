@@ -10,13 +10,14 @@
 ### Generate amplicon sequence variants (ASVs) using DADA2
 
 #source /home/AAFC-AAC/dumonceauxt/miniconda3/etc/profile.d/conda.sh
-#conda activate qiime2-2021.2
+#conda activate dada2_denoise-2021.2
 
 # Get the conda file path from source and activate the conda environment.
 source ~/.bashrc
 conda activate qiime2-2022.2
 
-## The qiime2 dada2 denoise-single.
+## The qiime2 dada2 denoise-single parameters.
+
 # The number of threads to use in dada2.
 num_threads=10
 
@@ -28,6 +29,7 @@ trunc_len=0
 output_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22"
 mkdir -p $output_dir
 
+# The pre_processing directory.
 preprocessing_dir="${output_dir}/pre_processing"
 
 # The manifest input file that lists the sample ids, path to the fastq files and direction.
@@ -35,12 +37,12 @@ preprocessing_dir="${output_dir}/pre_processing"
 #eg line: D01-01ppm2010_S10_L001,/home/AAFC-AAC/dumonceauxt/Topp_antifungal/pre_processing/downsampled/D01-01ppm2010_S10_L001.cutadapt.trim.merge.downsampled,forward
 fastq_manifest_infile="${preprocessing_dir}/fastq_sample_manifest.csv"
 
-# The qiime output directory.
-qiime_output_dir="${output_dir}/qiime2"
-mkdir -p $qiime_output_dir
+# The qiime2 dada2 denoise output directory.
+dada2_denoise_output_dir="${output_dir}/dada2_denoise"
+mkdir -p $dada2_denoise_output_dir
 
-# The qiime2 import file.
-dada2_demux_file="${qiime_output_dir}/single_end_demux_dada2.qza"
+# The dada2_denoise import file.
+dada2_demux_file="${dada2_denoise_output_dir}/single_end_demux_dada2.qza"
 
 # Import the manifest input file into qiime demux format.
 if [ ! -s $dada2_demux_file ];
@@ -63,13 +65,13 @@ then
     echo "The ${dada2_demux_filename} file has already been created. Skipping to next set of commands!!!"
  fi
  
-## The qiime2 dada2 Files.
-dada2_rep_seqs_file="${qiime_output_dir}/rep_seqs_dada2.qza"
-dada2_table_file="${qiime_output_dir}/table_dada2.qza"
-dada2_denoising_stats_file="${qiime_output_dir}/denoising_stats_dada2.qza"
+## The dada2_denoise dada2 Files.
+dada2_rep_seqs_file="${dada2_denoise_output_dir}/rep_seqs_dada2.qza"
+dada2_table_file="${dada2_denoise_output_dir}/table_dada2.qza"
+dada2_denoising_stats_file="${dada2_denoise_output_dir}/denoising_stats_dada2.qza"
 
 # Output directories
-dada2_stats_output_dir="${qiime_output_dir}/stats_exported_dada2"
+dada2_stats_output_dir="${dada2_denoise_output_dir}/stats_exported_dada2"
 
 # Run the dada2 denoise-single command to obtain the.
 if [ ! -s  $dada2_rep_seqs_file ] && [  ! -s $dada2_table_file ] && [ ! -s $dada2_denoising_stats_file ];

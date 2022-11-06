@@ -148,10 +148,10 @@ ${cutadapt_dir}/${i}${cutadapt_read2_suffix} \
 
 # Generate the manifest file for qiime2.
 echo "Generate the manifest file for qiime2."
-echo "sample-id,absolute-filepath,direction" >> ${fastq_manifest_infile};
-for i in $(cat ${fastq_list_file});
-do echo $i;
-echo -e "${i},${flash_merge_dir}/${i}${manifest_fastq_suffix},forward" >> ${fastq_manifest_infile};
+echo "sample-id,absolute-filepath,direction" > ${fastq_manifest_infile};
+for sample_id in $(cat ${fastq_list_file});
+do echo $sample_id;
+echo -e "${sample_id},${flash_merge_dir}/${sample_id}${manifest_fastq_suffix},forward" >> ${fastq_manifest_infile};
 done
 
 echo "The prepocessing.sh script has finished."
