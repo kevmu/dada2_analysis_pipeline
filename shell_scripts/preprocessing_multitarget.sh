@@ -11,17 +11,17 @@
 #source /home/AAFC-AAC/townj/miniconda3/etc/profile.d/conda.sh
 #conda activate qiime2-2021.2
 
+# Get the conda environment using the .bashrc source file.
 source ~/.bashrc
-conda activate cutadapt_env
 
 # Cutadapt command configuration data.
-input_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22/fastq_files"
+input_dir="/export/home/AAFC-AAC/muirheadk/multi_target_project/sample_dataset/fastq"
 
 # The metadata input file of the project.
-metadata_infile="/Users/kevin.muirhead/Desktop/Macrosteles_Microbiome_Metadata.txt"
+metadata_infile="/export/home/AAFC-AAC/muirheadk/multi_target_project/sample_dataset/sample_metadata.tsv"
  
 # The output directory.
-output_dir="/Users/kevin.muirhead/Desktop/macrosteles_edel_22_test"
+output_dir="/export/home/AAFC-AAC/muirheadk/multi_target_project/sample_dataset"
 
 # Create the output directory if it doesn't already exist.
 mkdir -p ${output_dir}
@@ -31,8 +31,8 @@ min_read_length=100
 num_remove_adapters=2
 quality_cutoff=30
 
-read1_suffix="_R1_001.fastq.gz"
-read2_suffix="_R2_001.fastq.gz"
+read1_suffix="_L001_R1_001.fastq.gz"
+read2_suffix="_L001_R2_001.fastq.gz"
 
 cutadapt_read1_suffix=".R1.cutadapt.fq"
 cutadapt_read2_suffix=".R2.cutadapt.fq"
@@ -152,11 +152,27 @@ then
     exit 0;
 fi
 
+
+# The manifest input file that lists the sample ids, path to the fastq files and direction.#Manifest file must be .csv with column headers: sample-id,absolute-filepath,direction
+#eg line: D01-01ppm2010_S10_L001,/home/AAFC-AAC/dumonceauxt/Topp_antifungal/pre_processing/downsampled/D01-01ppm2010_S10_L001.cutadapt.trim.merge.downsampled,forward
+fastq_manifest_infile="${preprocessing_dir}/fastq_sample_manifest.csv"
+
+## Generate the manifest file for qiime2.
+echo "Generate the manifest file for qiime2."
+echo "sample-id,absolute-filepath,direction" > ${fastq_manifest_infile};
+
 # Get rows starting after the header line using tail -n+2.
 for row in $(tail -n+2 $metadata_infile);
 do
     echo $row;
+
+    # Get the sample id in column 1.
+    sample_id=$(echo $row | tr '\t' ',' | cut -d ',' -f1 );
+
+    # Get the project name given the project index.
     project_name=$(echo $row | tr '\t' ',' | cut -d ',' -f $project_index);
+
+    # Get the target name given the target index.
     target_name=$(echo $row | tr '\t' ',' | cut -d ',' -f $target_index);
 
     echo $project_name;
@@ -164,10 +180,30 @@ do
     
     # Get the adapters for this entry based on the target column value.
     get_target_adapters "$target_name"
+
+    # Make the cutadapt target directory.
+    cutadapt_target_dir="${cutadapt_dir}/${target_name}"
+    mkdir -p $cutadapt_target_dir
     
     # Activate the cutadapt conda environment.
     conda activate cutadapt_env
-    
+
+    echo "cutadapt \
+    -g ${adapter1_f} \
+    -a ${adapter2_f} \
+    -G ${adapter1_r} \
+    -A ${adapter2_r} \
+    -m ${min_read_length} \
+    -n ${num_remove_adapters} \
+    --discard-untrimmed \
+    -q ${quality_cutoff} \
+    --pair-filter=both \
+    ${input_dir}/${sample_id}${read1_suffix} \
+    ${input_dir}/${sample_id}${read2_suffix} \
+    -o ${cutadapt_target_dir}/${sample_id}${cutadapt_read1_suffix} \
+    -p ${cutadapt_target_dir}/${sample_id}${cutadapt_read2_suffix} \
+    "
+ 
     cutadapt \
     -g ${adapter1_f} \
     -a ${adapter2_f} \
@@ -178,36 +214,40 @@ do
     --discard-untrimmed \
     -q ${quality_cutoff} \
     --pair-filter=both \
-    ${input_dir}/${i}${read1_suffix} \
-    ${input_dir}/${i}${read2_suffix} \
-    -o ${cutadapt_dir}/${i}${cutadapt_read1_suffix} \
-    -p ${cutadapt_dir}/${i}${cutadapt_read2_suffix} \
+    ${input_dir}/${sample_id}${read1_suffix} \
+    ${input_dir}/${sample_id}${read2_suffix} \
+    -o ${cutadapt_target_dir}/${sample_id}${cutadapt_read1_suffix} \
+    -p ${cutadapt_target_dir}/${sample_id}${cutadapt_read2_suffix} \
+
+    # Make the flash merge target directory.
+    flash_merge_target_dir="${flash_merge_dir}/${target_name}"
+    mkdir -p $flash_merge_target_dir
 
     # Activate the flash2 conda environment.
     conda activate flash2_env
+
+    echo "flash2 \
+    -f ${fragment_length} \
+    -s ${fragment_length_stddev} \
+    -r ${read_length} \
+    ${cutadapt_target_dir}/${sample_id}${cutadapt_read1_suffix} \
+    ${cutadapt_target_dir}/${sample_id}${cutadapt_read2_suffix} \
+    -d ${flash_merge_target_dir} \
+    -o ${sample_id}${flash_output_suffix} \
+    "
 
     flash2 \
     -f ${fragment_length} \
     -s ${fragment_length_stddev} \
     -r ${read_length} \
-    ${cutadapt_dir}/${i}${cutadapt_read1_suffix} \
-    ${cutadapt_dir}/${i}${cutadapt_read2_suffix} \
-    -d ${flash_merge_dir} \
-    -o ${i}${flash_output_suffix} \
+    ${cutadapt_target_dir}/${sample_id}${cutadapt_read1_suffix} \
+    ${cutadapt_target_dir}/${sample_id}${cutadapt_read2_suffix} \
+    -d ${flash_merge_target_dir} \
+    -o ${sample_id}${flash_output_suffix} \
 
-done
+    # Write to the fastq manifest file for the denoising step.
+    echo -e "${sample_id},${flash_merge_target_dir}/${sample_id}${manifest_fastq_suffix},forward" >> ${fastq_manifest_infile};
 
-# The manifest input file that lists the sample ids, path to the fastq files and direction.#Manifest file must be .csv with column headers: sample-id,absolute-filepath,direction
-#eg line: D01-01ppm2010_S10_L001,/home/AAFC-AAC/dumonceauxt/Topp_antifungal/pre_processing/downsampled/D01-01ppm2010_S10_L001.cutadapt.trim.merge.downsampled,forward
-fastq_manifest_infile="${preprocessing_dir}/fastq_sample_manifest.csv"
-
-## Generate the manifest file for qiime2.
-echo "Generate the manifest file for qiime2."
-echo "sample-id,absolute-filepath,direction" > ${fastq_manifest_infile};
-for i in $(cat ${fastq_list_file});
-do
-    echo $i;
-    echo -e "${i},${flash_merge_dir}/${i}${manifest_fastq_suffix},forward" >> ${fastq_manifest_infile};
 done
 
 echo "The prepocessing.sh script has finished."
