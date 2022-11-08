@@ -26,7 +26,7 @@ trim_left=0
 trunc_len=0
 
 # The output directory to write output files.
-output_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22"
+output_dir="/export/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel"
 mkdir -p $output_dir
 
 # The pre_processing directory.

@@ -1,4 +1,3 @@
-### DO NOT USE YET ###
 #!/bin/bash
 #$ -S /bin/bash
 #$ -N dada2_analysis_pipeline_job
@@ -407,7 +406,7 @@ fi
 
 
 # Generate the dada2 species taxonomy file.
-species_taxonomy_tsv_file="${dada2_taxonomy_output_dir}/data2_species_taxonomy.tsv"
+species_taxonomy_tsv_file="${dada2_taxonomy_output_dir}/dada2_species_taxonomy.tsv"
 if [ ! -s $species_taxonomy_tsv_file ];
 then
     echo -e "#OTUID\ttaxonomy\tconfidence" >> ${species_taxonomy_tsv_file}
@@ -419,7 +418,7 @@ fi
 
 merged_phyloseq_abund_tax_file="${dada2_taxonomy_output_dir}/merged_phyloseq_abund_tax.tsv"
 
-python ../python_scripts/merge_phyloseq_abund_tax.py --phyloseq_abund_infile ${phyloseq_abund_tsv_file} --phyloseq_tax_infile ${phyloseq_taxonomy_tsv_file} --output_dir ${dada2_taxonomy_output_dir}
+python ../python_scripts/merge_phyloseq_abund_tax.py --phyloseq_abund_infile ${phyloseq_abund_tsv_file} --tax_infile ${taxonomy_tsv_file} --output_dir ${dada2_taxonomy_output_dir}
 
 echo "The merged phyloseq abundance and taxonomy summary file is located at the following path ${merged_phyloseq_abund_tax_file}."
 

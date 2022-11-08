@@ -1,4 +1,3 @@
-### DO NOT USE YET ###
 #qsub preprocessing.sh
 
 #!/bin/bash

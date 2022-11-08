@@ -17,13 +17,12 @@ source ~/.bashrc
 conda activate qiime2-2022.2
 
 # Dataset Metadata input file.
-dataset_metadata_file="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22/macrosteles_edel_22_metadata.txt"
+dataset_metadata_file="/export/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel/Macrosteles-Edel_Metadata.txt"
 
 ## The dada2 classifier database file.
 # Unite ITS classifier Database.
 #dada2_classifier_file="/home/AAFC-AAC/muirheadk/projects/classifiers/unite_20171201/unite-ver7-99-classifier-01.12.2017.qza"
 # SILVA 16S classifier database file.
-#dada2_classifier_file="/home/AGR.GC.CA/muirheadk/dada2_databases/silva_16S_138_99_515_806/classifiers/silva_16S_138_99_515_806/silva-138-99-classifier-515-806.qza"
 dada2_classifier_file="${HOME}/classifiers/silva_16S_138_99_515_806/silva-138-99-classifier-515-806.qza"
 
 # Minimum length of sequences in bps to remove within the sequence length filtering step.
@@ -33,21 +32,28 @@ min_sequence_length=100
 min_num_samples=2
 
 # The output directory to write output files.
-output_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22_test"
+output_dir="/export/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel"
 mkdir -p $output_dir
+
+# The qiime2 dada2 denoise output directory.
+dada2_denoise_dir="${output_dir}/dada2_denoise"
+mkdir -p $dada2_denoise_dir
 
 # The qiime output directory.
 qiime_output_dir="${output_dir}/qiime2"
 mkdir -p $qiime_output_dir
  
 ## The qiime2 dada2 Files.
-dada2_rep_seqs_file="${qiime_output_dir}/rep_seqs_dada2.qza"
+dada2_rep_seqs_file="${dada2_denoise_dir}/rep_seqs_dada2.qza"
+dada2_table_file="${dada2_denoise_dir}/table_dada2.qza"
+dada2_denoising_stats_file="${dada2_denoise_dir}/denoising_stats_dada2.qza"
+
+# The minimum length dada2 representative sequences file
 dada2_rep_seqs_min_len_file="${qiime_output_dir}/rep_seqs_${min_sequence_length}bp_dada2.qza"
-dada2_table_file="${qiime_output_dir}/table_dada2.qza"
-dada2_denoising_stats_file="${qiime_output_dir}/denoising_stats_dada2.qza"
 
 # Minimum length dada2 table files.
 dada2_table_min_len_file="${qiime_output_dir}/min_length_table_${min_sequence_length}bp_dada2.qza"
+
 # Minimum length dada2 table file.
 dada2_table_min_samples_filtered_file="${qiime_output_dir}/min_length_${min_sequence_length}bp_filtered_table_dada2.qza"
 
@@ -403,7 +409,7 @@ fi
 
 merged_phyloseq_abund_tax_file="${dada2_taxonomy_output_dir}/merged_phyloseq_abund_tax.tsv"
 
-python ../python_scripts/merge_phyloseq_abund_tax.py --phyloseq_abund_infile ${phyloseq_abund_tsv_file} --phyloseq_tax_infile ${phyloseq_taxonomy_tsv_file} --output_dir ${dada2_taxonomy_output_dir}
+python ../python_scripts/merge_phyloseq_abund_tax.py --phyloseq_abund_infile ${phyloseq_abund_tsv_file} --tax_infile ${taxonomy_tsv_file} --output_dir ${dada2_taxonomy_output_dir}
 
 echo "The merged phyloseq abundance and taxonomy summary file is located at the following path ${merged_phyloseq_abund_tax_file}."
 

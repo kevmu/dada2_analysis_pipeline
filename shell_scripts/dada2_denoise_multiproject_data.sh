@@ -1,4 +1,3 @@
-### DO NOT USE YET ###
 #!/bin/bash
 #$ -S /bin/bash
 #$ -N dada2_analysis_pipeline_job

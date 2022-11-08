@@ -14,9 +14,9 @@ source ~/.bashrc
 conda activate cutadapt_env
 
 # Cutadapt command configuration data.
-input_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22/fastq_files"
+input_dir="/export/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel/fastq"
 
-output_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22"
+output_dir="/export/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel"
 mkdir -p ${output_dir}
 
 ## Cutadapt program parameters.
@@ -56,8 +56,8 @@ min_read_length=100
 num_remove_adapters=2
 quality_cutoff=30
 
-read1_suffix="_R1_001.fastq.gz"
-read2_suffix="_R2_001.fastq.gz"
+read1_suffix="_L001_R1_001.fastq.gz"
+read2_suffix="_L001_R2_001.fastq.gz"
 
 cutadapt_read1_suffix=".R1.cutadapt.fq"
 cutadapt_read2_suffix=".R2.cutadapt.fq"
@@ -101,7 +101,7 @@ mkdir -p ${flash_merge_dir}
 # input_suffix=".cutadapt.trim.merge.extendedFrags.fastq"
 # output_suffix=".cutadapt.trim.merge.downsampled"
 
-find ${input_dir} -name "*.fastq.gz" -type f | sed 's/${read1_suffix}\|${read2_suffix}//g' | rev | cut -d '/' -f1 | rev | sort -V | uniq > ${fastq_list_file}
+find ${input_dir} -name "*.fastq.gz" -type f | sed "s/${read1_suffix}\|${read2_suffix}//g" | rev | cut -d '/' -f1 | rev | sort -V | uniq > ${fastq_list_file}
 
 #find ${input_dir} -name "*.fastq.gz" -type f | sed 's/${read1_suffix}\|${read2_suffix}//g' | rev | cut -d '/' -f1 | rev | sort -V | uniq > ${fastq_list_file}
 
