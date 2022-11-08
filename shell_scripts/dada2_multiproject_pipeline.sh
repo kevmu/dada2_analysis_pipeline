@@ -17,14 +17,24 @@
 source ~/.bashrc
 conda activate qiime2-2022.2
 
-# Dataset Metadata input file.
-dataset_metadata_file="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22/macrosteles_edel_22_metadata.txt"
+# The dataset Metadata input file.
+dataset_metadata_file="/home/AAFC-AAC/muirheadk/multi_target_project/sample_dataset/dada2_denoise/project_dir/Test6_Melfort/16S_515_806/Test6_Melfort_16S_515_806_metadata.tsv"
+
+# The dataset representative sequences input file.
+dada2_rep_seqs_file="/home/AAFC-AAC/muirheadk/multi_target_project/sample_dataset/dada2_denoise/project_dir/Test6_Melfort/16S_515_806/Test6_Melfort_16S_515_806_rep_seqs.qza"
+
+# The dataset table input file.
+dada2_table_file="/home/AAFC-AAC/muirheadk/multi_target_project/sample_dataset/dada2_denoise/project_dir/Test6_Melfort/16S_515_806/Test6_Melfort_16S_515_806_filtered_table.qza"
+
+# The output directory to write output files.
+output_dir="/home/AAFC-AAC/muirheadk/multi_target_project/sample_dataset"
+mkdir -p $output_dir
 
 ## The dada2 classifier database file.
 # Unite ITS classifier Database.
-#dada2_classifier_file="/home/AAFC-AAC/muirheadk/projects/classifiers/unite_20171201/unite-ver7-99-classifier-01.12.2017.qza"
+#dada2_classifier_file="${HOME}/classifiers/unite_20171201/unite-ver7-99-classifier-01.12.2017.qza"
+
 # SILVA 16S classifier database file.
-#dada2_classifier_file="/home/AGR.GC.CA/muirheadk/dada2_databases/silva_16S_138_99_515_806/classifiers/silva_16S_138_99_515_806/silva-138-99-classifier-515-806.qza"
 dada2_classifier_file="${HOME}/classifiers/silva_16S_138_99_515_806/silva-138-99-classifier-515-806.qza"
 
 # Minimum length of sequences in bps to remove within the sequence length filtering step.
@@ -33,22 +43,27 @@ min_sequence_length=100
 # Minimum number of samples to filter out features occuring only 1 sample using -p-min-samples. Use n > 1 (Default: 2)
 min_num_samples=2
 
-# The output directory to write output files.
-output_dir="/home/AGR.GC.CA/muirheadk/macrosteles/macrosteles_edel_22_test"
-mkdir -p $output_dir
+# The dada2 analysis output directory.
+dada2_analysis_dir="${output_dir}/dada2_analysis"
+mkdir -p $dada2_analysis_dir
+
+# The project name taken from the metadata file name given as input. Should have the project and target names in the filename.
+project_name=$(basename $dataset_metadata_file | sed 's/_metadata.tsv//g')
+
+# The project_directory.
+project_dir="${dada2_analysis_dir}/${project_name}"
+mkdir -p $project_dir
 
 # The qiime output directory.
-qiime_output_dir="${output_dir}/qiime2"
+qiime_output_dir="${project_dir}/qiime2"
 mkdir -p $qiime_output_dir
  
-## The qiime2 dada2 Files.
-dada2_rep_seqs_file="${qiime_output_dir}/rep_seqs_dada2.qza"
+## The minimum length dada2 representative sequences file.
 dada2_rep_seqs_min_len_file="${qiime_output_dir}/rep_seqs_${min_sequence_length}bp_dada2.qza"
-dada2_table_file="${qiime_output_dir}/table_dada2.qza"
-dada2_denoising_stats_file="${qiime_output_dir}/denoising_stats_dada2.qza"
 
 # Minimum length dada2 table files.
 dada2_table_min_len_file="${qiime_output_dir}/min_length_table_${min_sequence_length}bp_dada2.qza"
+
 # Minimum length dada2 table file.
 dada2_table_min_samples_filtered_file="${qiime_output_dir}/min_length_${min_sequence_length}bp_filtered_table_dada2.qza"
 
@@ -84,13 +99,13 @@ phyloseq_taxonomy_tsv_file="${dada2_taxonomy_output_dir}/phyloseq_taxonomy.tsv"
 phyloseq_abund_biom_file="${qiime_output_dir}/phyloseq.biom"
 phyloseq_abund_tsv_file="${qiime_output_dir}/phyloseq.tsv"
 
-# Check to see if the output files from dada2_denoise_data.sh script has been run and completed.
-if [ ! -s  $dada2_rep_seqs_file ] && [  ! -s $dada2_table_file ] && [ ! -s $dada2_denoising_stats_file ];
+# Check to see if the output files from dada2_denoise_multiproject_data.sh script has been run and completed.
+if [ ! -s $dataset_metadata_file ] && [ ! -s $dada2_rep_seqs_file ] && [  ! -s $dada2_table_file ];
 then
-    echo "Rerun the dada2_denoise_data.sh script. One of the output files do not exist!"
+    echo "Rerun the dada2_denoise_multiproject_data.sh script. One of the output files do not exist!"
+    echo "${dataset_metadata_file}"
     echo "${dada2_rep_seqs_file}"
     echo "${dada2_table_file}"
-    echo "${dada2_denoising_stats_file}"
     exit 1;
 fi
 

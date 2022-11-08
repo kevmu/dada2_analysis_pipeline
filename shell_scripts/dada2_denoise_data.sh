@@ -38,11 +38,11 @@ preprocessing_dir="${output_dir}/pre_processing"
 fastq_manifest_infile="${preprocessing_dir}/fastq_sample_manifest.csv"
 
 # The qiime2 dada2 denoise output directory.
-dada2_denoise_output_dir="${output_dir}/dada2_denoise"
-mkdir -p $dada2_denoise_output_dir
+dada2_denoise_dir="${output_dir}/dada2_denoise"
+mkdir -p $dada2_denoise_dir
 
 # The dada2_denoise import file.
-dada2_demux_file="${dada2_denoise_output_dir}/single_end_demux_dada2.qza"
+dada2_demux_file="${dada2_denoise_dir}/single_end_demux_dada2.qza"
 
 # Import the manifest input file into qiime demux format.
 if [ ! -s $dada2_demux_file ];
@@ -66,12 +66,12 @@ then
  fi
  
 ## The dada2_denoise dada2 Files.
-dada2_rep_seqs_file="${dada2_denoise_output_dir}/rep_seqs_dada2.qza"
-dada2_table_file="${dada2_denoise_output_dir}/table_dada2.qza"
-dada2_denoising_stats_file="${dada2_denoise_output_dir}/denoising_stats_dada2.qza"
+dada2_rep_seqs_file="${dada2_denoise_dir}/rep_seqs_dada2.qza"
+dada2_table_file="${dada2_denoise_dir}/table_dada2.qza"
+dada2_denoising_stats_file="${dada2_denoise_dir}/denoising_stats_dada2.qza"
 
 # Output directories
-dada2_stats_output_dir="${dada2_denoise_output_dir}/stats_exported_dada2"
+dada2_stats_output_dir="${dada2_denoise_dir}/stats_exported_dada2"
 
 # Run the dada2 denoise-single command to obtain the.
 if [ ! -s  $dada2_rep_seqs_file ] && [  ! -s $dada2_table_file ] && [ ! -s $dada2_denoising_stats_file ];

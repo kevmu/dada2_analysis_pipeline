@@ -17,8 +17,8 @@
 source ~/.bashrc
 conda activate qiime2-2022.2
 
-# The metadata input file of the project.
-metadata_infile="/export/home/AAFC-AAC/muirheadk/multi_target_project/dada2_analysis_pipeline/shell_scripts/fastq_sample_manifest.csv"
+# The metadata input file for the project.
+metadata_infile="/export/home/AAFC-AAC/muirheadk/multi_target_project/sample_dataset/sample_metadata.tsv"
 
 ## The qiime2 dada2 denoise-single parameters.
 
@@ -44,14 +44,18 @@ preprocessing_dir="${output_dir}/pre_processing"
 fastq_manifest_infile="${preprocessing_dir}/fastq_sample_manifest.csv"
 
 ## The qiime dada2 denoise output directory.
-dada2_denoise_output_dir="${output_dir}/dada2_denoise"
-mkdir -p $dada2_denoise_output_dir
+dada2_denoise_dir="${output_dir}/dada2_denoise"
+mkdir -p $dada2_denoise_dir
+
+## The all samples output directory.
+all_datasets_dir="${dada2_denoise_dir}/all_datasets"
+mkdir -p $all_datasets_dir
 
 ## The dada2_denoise import file.
-dada2_demux_file="${dada2_denoise_output_dir}/single_end_demux_dada2.qza"
+dada2_demux_file="${all_datasets_dir}/single_end_demux_dada2.qza"
 
 ## The dada2_denoise import file.
-dada2_demux_file="${dada2_denoise_output_dir}/single_end_demux_dada2.qza"
+dada2_demux_file="${all_datasets_dir}/single_end_demux_dada2.qza"
 
 ## Import the manifest input file into qiime demux format.
 if [ ! -s $dada2_demux_file ];
@@ -75,12 +79,12 @@ then
  fi
 
 ## The dada2_denoise dada2 Files.
-dada2_rep_seqs_file="${dada2_denoise_output_dir}/rep_seqs_dada2.qza"
-dada2_table_file="${dada2_denoise_output_dir}/table_dada2.qza"
-dada2_denoising_stats_file="${dada2_denoise_output_dir}/denoising_stats_dada2.qza"
+dada2_rep_seqs_file="${all_datasets_dir}/rep_seqs_dada2.qza"
+dada2_table_file="${all_datasets_dir}/table_dada2.qza"
+dada2_denoising_stats_file="${all_datasets_dir}/denoising_stats_dada2.qza"
 
 # Output directories
-dada2_stats_output_dir="${dada2_denoise_output_dir}/stats_exported_dada2"
+dada2_stats_output_dir="${all_datasets_dir}/stats_exported_dada2"
 
 # Run the dada2 denoise-single command to obtain the.
 if [ ! -s  $dada2_rep_seqs_file ] && [  ! -s $dada2_table_file ] && [ ! -s $dada2_denoising_stats_file ];
@@ -129,8 +133,6 @@ else
     echo "The ${dada2_stats_tsv_filename} file has already been created. Skipping to next set of commands!!!"
 fi
 
-exit 0; 
-
 # Make sure that the input field separator for newlines is a newline character '\n'.
 IFS=$'\n'
 
@@ -170,13 +172,54 @@ then
     exit 0;
 fi
 
+# Make the project output directory.
+project_output_dir="${dada2_denoise_dir}/project_dir"
+mkdir -p $project_output_dir
+
+# Get the column index 1 and column index 2 for the order of the project and target columns.
+if [ $project_index -lt $target_index ];
+then
+    column_index1=${project_index}
+    column_index2=${target_index}
+elif [ $project_index -gt $target_index ];
+then
+    column_index1=${target_index}
+    column_index2=${project_index}
+fi
 
 # Make a file of samples ids for each project.
-for project_name in $(tail -n+2 $metadata_infile | tr '\t' ',' | cut -d ',' -f $project_index | sort -V | uniq | sed 's/ /_/g');
+for row_entry in $(tail -n+2 $metadata_infile | tr '\t' ',' | cut -d ',' -f $column_index1,$column_index2 | sort -V | uniq | sed 's/ /_/g');
 do
-    echo $project_name;
-    echo "${project_name}_sample_ids.txt";
-    echo "#SampleID" > "${dada2_denoise_output_dir}/${project_name}_sample_ids.txt"
+
+    # Get the project name and target name from the row entry based on column order.
+    if [ $project_index -lt $target_index ];
+    then
+        project_name=$(echo $row_entry | cut -d ',' -f1)
+        target_name=$(echo $row_entry | cut -d ',' -f2) 
+    elif [ $project_index -gt $target_index ];
+    then
+        target_name=$(echo $row_entry | cut -d ',' -f1)
+        project_name=$(echo $row_entry | cut -d ',' -f2)
+    fi
+ 
+    #echo $project_name;
+    #echo $target_name;
+    
+    # The project name directory.
+    project_name_dir="${project_output_dir}/${project_name}"
+    mkdir -p $project_name_dir;
+
+    # The target name directory.
+    target_name_dir="${project_name_dir}/${target_name}"
+    mkdir -p $target_name_dir; 
+ 
+    echo "${project_name}_${target_name}_sample_ids.txt";
+
+    sample_ids_list_file="${target_name_dir}/${project_name}_${target_name}_sample_ids.txt"
+    echo "#SampleID" > ${sample_ids_list_file}
+
+    project_target_metadata_file="${target_name_dir}/${project_name}_${target_name}_metadata.tsv"
+    echo "${header}" > ${project_target_metadata_file}
 
 done
 
@@ -192,41 +235,70 @@ do
     echo $sample_id;
     echo $project_name;
     echo $target_name;
-    echo "${project_name}_sample_ids.txt";
-    
+    echo "${project_name}_${target_name}_sample_ids.txt";
+   
+    # The project name directory.
+    project_name_dir="${project_output_dir}/${project_name}"
+    mkdir -p $project_name_dir;
+
+    # The target name directory.
+    target_name_dir="${project_name_dir}/${target_name}"
+    mkdir -p $target_name_dir;
+
     ## Distribute based on project name.
-    sample_ids_list_file="${dada2_denoise_output_dir}/${project_name}_sample_ids.txt"
-    echo $sample_id >> ${sample_ids_list_file}
+    sample_ids_list_file="${target_name_dir}/${project_name}_${target_name}_sample_ids.txt"
+    echo ${sample_id} >> ${sample_ids_list_file}
+
+    project_target_metadata_file="${target_name_dir}/${project_name}_${target_name}_metadata.tsv"
+    echo ${row} >> ${project_target_metadata_file}
 
 done
 
 # Get the filtered files after splitting the denoised dataset by project.
-for project_name in $(tail -n+2 $metadata_infile | tr '\t' ',' | cut -d ',' -f $project_index | sort -V | uniq | sed 's/ /_/g');
+for row_entry in $(tail -n+2 $metadata_infile | tr '\t' ',' | cut -d ',' -f $column_index1,$column_index2 | sort -V | uniq | sed 's/ /_/g');
 do
-    echo $project_name;
-    sample_ids_list_file="${dada2_denoise_output_dir}/${project_name}_sample_ids.txt"
-    project_name_table_file="${dada2_denoise_output_dir}/${project_name}_filtered_table.qza"
-    project_name_rep_seqs_file="${dada2_denoise_output_dir}/${project_name}_rep_seqs.qza"
+    # Get the project name and target name from the row entry based on column order.
+    if [ $project_index -lt $target_index ];
+    then
+        project_name=$(echo $row_entry | cut -d ',' -f1)
+        target_name=$(echo $row_entry | cut -d ',' -f2)
+    elif [ $project_index -gt $target_index ];
+    then
+        target_name=$(echo $row_entry | cut -d ',' -f1)
+        project_name=$(echo $row_entry | cut -d ',' -f2)
+    fi
+
+    # The project name directory.
+    project_name_dir="${project_output_dir}/${project_name}"
+    mkdir -p $project_name_dir;
+
+    # The target name directory.
+    target_name_dir="${project_name_dir}/${target_name}"
+    mkdir -p $target_name_dir;
+
+    sample_ids_list_file="${target_name_dir}/${project_name}_${target_name}_sample_ids.txt"
+    project_target_table_file="${target_name_dir}/${project_name}_${target_name}_filtered_table.qza"
+    project_target_rep_seqs_file="${target_name_dir}/${project_name}_${target_name}_rep_seqs.qza"
 
     # Get the filtered table based on the sample_ids for the project.
     echo "qiime feature-table filter-samples \
       --i-table ${dada2_table_file} \
       --m-metadata-file ${sample_ids_list_file} \
-      --o-filtered-table ${project_name_table_file}"
+      --o-filtered-table ${project_target_table_file}"
     qiime feature-table filter-samples \
       --i-table ${dada2_table_file} \
       --m-metadata-file ${sample_ids_list_file} \
-      --o-filtered-table ${project_name_table_file}
+      --o-filtered-table ${project_target_table_file}
 
     # Get the rep seqs file using the table generated in the previous command.
     echo "qiime feature-table filter-seqs \
       --i-data ${dada2_rep_seqs_file} \
-      --i-table ${project_name_table_file} \
-      --o-filtered-data ${project_name_rep_seqs_file}"
+      --i-table ${project_target_table_file} \
+      --o-filtered-data ${project_target_rep_seqs_file}"
     qiime feature-table filter-seqs \
       --i-data ${dada2_rep_seqs_file} \
-      --i-table ${project_name_table_file} \
-      --o-filtered-data ${project_name_rep_seqs_file}
+      --i-table ${project_target_table_file} \
+      --o-filtered-data ${project_target_rep_seqs_file}
 
 done
 
