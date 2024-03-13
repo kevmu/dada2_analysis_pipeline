@@ -1,10 +1,16 @@
 #!/bin/bash
+#SBATCH --partition=cpu2019
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --time=01:00:00
 #SBATCH --mem=1G
-#SBATCH --partition=cpu2019
+
+## Example command
+#sh download_dada2_classifier_files.sh -i ITS_Unite_2023 -o /Users/kevin.muirhead/Desktop/classifiers
+## Install qiime2 conda environment before using this script.
+#wget https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.2-py38-linux-conda.yml
+#conda env create -n qiime2-amplicon-2024.2 --file qiime2-amplicon-2024.2-py38-linux-conda.yml
 
 ### Program for downloading 16S rRNA or ITS fasta files for qiime feature-classifier for dada2.
 
@@ -26,12 +32,15 @@ echo $OUTPUT_DIR
 if [[ "${DATABASE_TYPE}" == 'silva_16S_138_99_515_806' ]];
 then
 	echo "Downloading the silva_16S_138_99_515_806 database."
-elif [[ "${DATABASE_TYPE}" == 'ITS_Unite' ]];
+elif [[ "${DATABASE_TYPE}" == 'ITS_Unite_2017' ]];
 then
-	echo "Downloading the ITS_Unite database."
+	echo "Downloading the ITS_Unite_2017 database."
+elif [[ "${DATABASE_TYPE}" == 'ITS_Unite_2023' ]];
+then
+    echo "Downloading the ITS_Unite_2023 database."
 else
 	echo "You entered ${DATABASE_TYPE} for the database type."
-	echo "Please enter silva_16S_138_99_515_806 for the Silva 138 16S rRNA 515/806 classifier or ITS_Unite for the ITS Unite fungal classifier! Use the -i parameter option for the DATABASE_TYPE."
+	echo "Please enter silva_16S_138_99_515_806 for the Silva 138 16S rRNA 515/806 classifier or ITS_Unite_2017 or ITS_Unite_2023 for other versions of ITS Unite fungal classifier! Use the -i parameter option for the DATABASE_TYPE."
 	exit 0;
 fi
 
@@ -44,12 +53,13 @@ fi
 echo "Starting download script...."
 
 # Get the conda file path from source and activate the conda environment.
-#source ~/.bash_profile
-#source ~/.bashrc
+source ~/.bash_profile
+##source ~/.bashrc
 
-#source /home/muirheadk/miniconda3/etc/profile.d/conda.sh
-source /home/AGR.GC.CA/muirheadk/miniconda3/etc/profile.d/conda.sh
-conda activate qiime2-2022.2
+##source /home/muirheadk/miniconda3/etc/profile.d/conda.sh
+#source /home/AGR.GC.CA/muirheadk/miniconda3/etc/profile.d/conda.sh
+##conda activate qiime2-2022.2
+conda activate qiime2-amplicon-2024.2
 
 # echo $DATABASE_TYPE
 # echo $OUTPUT_DIR
@@ -121,9 +131,9 @@ then
     echo "${silva_dir}/silva-138-99-classifier-515-806.qza"
     exit 0;
     
-elif [[ "${DATABASE_TYPE}" ==  "ITS_Unite" ]];
+elif [[ "${DATABASE_TYPE}" ==  "ITS_Unite_2017" ]];
 then
-	## UNITE ITS fasta.
+	## UNITE ITS 2017 fasta.
 	
 	# Downloading the sh_qiime_release_01.12.2017.zip file.
 	echo "Downloading the sh_qiime_release_01.12.2017.zip file."
@@ -162,7 +172,49 @@ then
     echo "Please use the following path for the classifier database file in the dada2_analysis_pipeline.sh shell script."
     echo "${unite_dir}/unite-ver7-99-classifier-01.12.2017.qza"
     exit 0;
+elif [[ "${DATABASE_TYPE}" ==  "ITS_Unite_2023" ]];
+then
+    ## UNITE ITS fasta.
     
+    # The unite_20230725 directory.
+    unite_dir="${classifier_dir}/unite_20230725"
+    mkdir -p ${unite_dir}
+    cd ${unite_dir}
+    
+    # Downloading the sh_qiime_release_25.07.2023.tgz file.
+    echo "Downloading the sh_qiime_release_25.07.2023.tgz file."
+    wget -O sh_qiime_release_25.07.2023.tgz https://files.plutof.ut.ee/public/orig/FB/78/FB78E30E44793FB02E5A4D3AE18EB4A6621A2FAEB7A4E94421B8F7B65D46CA4A.tgz
+
+    # Unzip the sh_qiime_release_25.07.2023.tgz file.
+    echo "tar uncompress the sh_qiime_release_25.07.2023.tgz file."
+    tar xvzf sh_qiime_release_25.07.2023.tgz
+
+    # Import the sh_refs_qiime_ver7_99_01.12.2017.fasta FeatureData[Sequence].
+    echo "Importing the sh_refs_qiime_ver9_99_25.07.2023.fasta FeatureData[Sequence]."
+    qiime tools import \
+     --type FeatureData[Sequence] \
+     --input-path sh_refs_qiime_ver9_99_25.07.2023.fasta \
+     --output-path unite-ver9-99-seqs-25.07.2023.qza
+
+    # Import the sh_taxonomy_qiime_ver7_99_01.12.2017.txt FeatureData[Taxonomy].
+    echo "Importing the sh_taxonomy_qiime_ver7_99_01.12.2017.txt FeatureData[Taxonomy]."
+    qiime tools import \
+     --type FeatureData[Taxonomy] \
+     --input-path sh_taxonomy_qiime_ver9_99_25.07.2023.txt \
+     --output-path unite-ver9-99-tax-25.07.2023.qza \
+     --input-format HeaderlessTSVTaxonomyFormat
+
+    # Run qiime feature-classifier fit-classifier-naive-bayes.
+    echo "Executing qiime feature-classifier fit-classifier-naive-bayes."
+    qiime feature-classifier fit-classifier-naive-bayes \
+     --i-reference-reads unite-ver9-99-seqs-25.07.2023.qza \
+     --i-reference-taxonomy unite-ver9-99-tax-25.07.2023.qza \
+     --o-classifier unite-ver9-99-classifier-25.07.2023.qza
+  
+    echo "The UNITE dada2 classifier database file is ready for use.";
+    echo "Please use the following path for the classifier database file in the dada2_analysis_pipeline.sh shell script."
+    echo "${unite_dir}/unite-ver9-99-classifier-25.07.2023.qza"
+    exit 0;
 fi
 
 
