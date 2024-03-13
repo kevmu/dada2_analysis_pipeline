@@ -14,7 +14,8 @@
 
 # Get the conda file path from source and activate the conda environment.
 source ~/.bashrc
-conda activate qiime2-2022.2
+##conda activate qiime2-2022.2
+conda activate qiime2-amplicon-2024.2
 
 # The metadata input file for the project.
 metadata_infile="/export/home/AAFC-AAC/muirheadk/multi_target_project/sample_dataset/sample_metadata.tsv"

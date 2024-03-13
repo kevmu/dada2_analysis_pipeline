@@ -14,7 +14,8 @@
 
 # Get the conda file path from source and activate the conda environment.
 source ~/.bashrc
-conda activate qiime2-2022.2
+##conda activate qiime2-2022.2
+conda activate qiime2-amplicon-2024.2
 
 # Dataset Metadata input file.
 dataset_metadata_file="/export/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel/Macrosteles-Edel_Metadata.txt"

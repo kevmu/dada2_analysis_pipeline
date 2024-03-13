@@ -14,7 +14,8 @@
 
 # Get the conda file path from source and activate the conda environment.
 source ~/.bashrc
-conda activate qiime2-2022.2
+##conda activate qiime2-2022.2
+conda activate qiime2-amplicon-2024.2
 
 # The dataset Metadata input file.
 dataset_metadata_file="/home/AAFC-AAC/muirheadk/multi_target_project/sample_dataset/dada2_denoise/project_dir/Test6_Melfort/16S_515_806/Test6_Melfort_16S_515_806_metadata.tsv"
