@@ -189,15 +189,15 @@ then
     echo "tar uncompress the sh_qiime_release_25.07.2023.tgz file."
     tar xvzf sh_qiime_release_25.07.2023.tgz
 
-    # Import the sh_refs_qiime_ver7_99_01.12.2017.fasta FeatureData[Sequence].
+    # Import the sh_refs_qiime_ver9_99_25.07.2023.fasta FeatureData[Sequence].
     echo "Importing the sh_refs_qiime_ver9_99_25.07.2023.fasta FeatureData[Sequence]."
     qiime tools import \
      --type FeatureData[Sequence] \
      --input-path sh_refs_qiime_ver9_99_25.07.2023.fasta \
      --output-path unite-ver9-99-seqs-25.07.2023.qza
 
-    # Import the sh_taxonomy_qiime_ver7_99_01.12.2017.txt FeatureData[Taxonomy].
-    echo "Importing the sh_taxonomy_qiime_ver7_99_01.12.2017.txt FeatureData[Taxonomy]."
+    # Import the sh_taxonomy_qiime_ver9_99_25.07.2023.txt FeatureData[Taxonomy].
+    echo "Importing the sh_taxonomy_qiime_ver9_99_25.07.2023.txt FeatureData[Taxonomy]."
     qiime tools import \
      --type FeatureData[Taxonomy] \
      --input-path sh_taxonomy_qiime_ver9_99_25.07.2023.txt \
