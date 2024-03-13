@@ -15,7 +15,6 @@ sh Miniconda3-py39_4.12.0-Linux-x86_64.sh -b -p ~/miniconda3
 
 wget https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.2-py38-linux-conda.yml
 conda env create -n qiime2-amplicon-2024.2 --file qiime2-amplicon-2024.2-py38-linux-conda.yml
-
 conda activate qiime2-amplicon-2024.2
 
 # Exporting qiime conda environment as a yaml file. (Optional)
@@ -24,8 +23,8 @@ conda env export > qiime2-amplicon-2024.2_env.yaml
 
 ## OR
 
-# Option 2: Install the qiime conda environment using the qiime2-2022.2_env.yaml file.
-conda env create --file dada2_analysis_pipeline/conda_envs/qiime2-2022.2_env.yaml 
+### Option 2: Install the qiime conda environment using the qiime2-amplicon-2024.2_env.yaml file.
+##conda env create --file dada2_analysis_pipeline/conda_envs/qiime2-amplicon-2024.2_env.yaml
 
 ## Install the cutadapt conda environment.
 
