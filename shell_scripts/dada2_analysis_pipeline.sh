@@ -22,9 +22,11 @@ dataset_metadata_file="/export/home/AAFC-AAC/muirheadk/projects/Macrosteles-Edel
 
 ## The dada2 classifier database file.
 # Unite ITS classifier Database.
-#dada2_classifier_file="/home/AAFC-AAC/muirheadk/projects/classifiers/unite_20171201/unite-ver7-99-classifier-01.12.2017.qza"
+##dada2_classifier_file="/home/AAFC-AAC/muirheadk/projects/classifiers/unite_20171201/unite-ver7-99-classifier-01.12.2017.qza"
+#dada2_classifier_file="/home/AAFC-AAC/muirheadk/projects/classifiers/unite_20230725/unite-ver9-99-classifier-25.07.2023.qza"
+
 # SILVA 16S classifier database file.
-dada2_classifier_file="${HOME}/classifiers/silva_16S_138_99_515_806/silva-138-99-classifier-515-806.qza"
+dada2_classifier_file="/home/AAFC-AAC/muirheadk/projects/classifiers/silva_16S_138_99_515_806/silva-138-99-classifier-515-806.qza"
 
 # Minimum length of sequences in bps to remove within the sequence length filtering step.
 min_sequence_length=100
