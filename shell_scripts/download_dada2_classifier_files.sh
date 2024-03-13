@@ -7,7 +7,8 @@
 #SBATCH --mem=1G
 
 ## Example command
-#sh download_dada2_classifier_files.sh -i ITS_Unite_2023 -o /Users/kevin.muirhead/Desktop/classifiers
+#sh download_dada2_classifier_files.sh -i ITS_Unite_2023 -o ${HOME}/classifiers
+
 ## Install qiime2 conda environment before using this script.
 #wget https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.2-py38-linux-conda.yml
 #conda env create -n qiime2-amplicon-2024.2 --file qiime2-amplicon-2024.2-py38-linux-conda.yml
