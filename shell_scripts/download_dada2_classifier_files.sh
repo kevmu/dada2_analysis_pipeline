@@ -101,24 +101,6 @@ then
 	# Downloading the silva-138-99-tax-515-806.qza file file.	
 	echo "Downloading the silva-138-99-tax-515-806.qza file."
 	wget -O silva-138-99-tax-515-806.qza https://data.qiime2.org/2022.2/common/silva-138-99-tax-515-806.qza
-
-	######
-	## Import the sh_refs_qiime_ver7_99_01.12.2017.fasta FeatureData[Sequence].
-	# echo "Importing the sh_refs_qiime_ver7_99_01.12.2017.fasta FeatureData[Sequence]."
-	# qiime tools import \
-	 # --type FeatureData[Sequence] \
-	 # --input-path sh_refs_qiime_ver7_99_01.12.2017.fasta \
-	 # --output-path unite-ver7-99-seqs-01.12.2017.qza
-
-
-	##Import the sh_taxonomy_qiime_ver7_99_01.12.2017.txt FeatureData[Taxonomy].
-	# echo "Importing the sh_taxonomy_qiime_ver7_99_01.12.2017.txt FeatureData[Taxonomy]."
-	# qiime tools import \
-	 # --type FeatureData[Taxonomy] \
-	 # --input-path sh_taxonomy_qiime_ver7_99_01.12.2017.txt \
-	 # --output-path unite-ver7-99-tax-01.12.2017.qza \
-	 # --input-format HeaderlessTSVTaxonomyFormat
-	######
 	
 	# Run qiime feature-classifier fit-classifier-naive-bayes.
 	echo "Executing qiime feature-classifier fit-classifier-naive-bayes."
@@ -134,6 +116,7 @@ then
     
 elif [[ "${DATABASE_TYPE}" ==  "ITS_Unite_2017" ]];
 then
+
 	## UNITE ITS 2017 fasta.
 	
 	# Downloading the sh_qiime_release_01.12.2017.zip file.
@@ -180,7 +163,6 @@ then
     # The unite_20230725 directory.
     unite_dir="${classifier_dir}/unite_20230725"
     mkdir -p ${unite_dir}
-    cd ${unite_dir}
     
     # Downloading the sh_qiime_release_25.07.2023.tgz file.
     echo "Downloading the sh_qiime_release_25.07.2023.tgz file."
@@ -190,31 +172,39 @@ then
     echo "tar uncompress the sh_qiime_release_25.07.2023.tgz file."
     tar xvzf sh_qiime_release_25.07.2023.tgz
 
-    # Import the sh_refs_qiime_ver9_99_25.07.2023.fasta FeatureData[Sequence].
-    echo "Importing the sh_refs_qiime_ver9_99_25.07.2023.fasta FeatureData[Sequence]."
+	ref_seq_fasta_file="${unite_dir}/developer/sh_refs_qiime_ver9_99_25.07.2023_dev.fasta"
+	qiime2_ref_seq_file="${unite_dir}/developer/unite-ver9-99-seqs-25.07.2023.qza"
+	
+	ref_tax_file="${unite_dir}/developer/sh_taxonomy_qiime_ver9_99_25.07.2023_dev.txt"
+	qiime2_ref_tax_file="${unite_dir}/developer/unite-ver9-99-tax-25.07.2023.qza"
+	
+	qiime2_cassifier_file="${unite_dir}/developer/unite-ver9-99-classifier-25.07.2023.qza"
+	
+    # Import the developer/sh_refs_qiime_ver9_99_25.07.2023.fasta FeatureData[Sequence].
+    echo "Importing the ${ref_seq_fasta_file} FeatureData[Sequence]."
     qiime tools import \
      --type FeatureData[Sequence] \
-     --input-path sh_refs_qiime_ver9_99_25.07.2023.fasta \
-     --output-path unite-ver9-99-seqs-25.07.2023.qza
+     --input-path ${ref_seq_fasta_file} \
+     --output-path ${qiime2_ref_seq_file}
 
-    # Import the sh_taxonomy_qiime_ver9_99_25.07.2023.txt FeatureData[Taxonomy].
-    echo "Importing the sh_taxonomy_qiime_ver9_99_25.07.2023.txt FeatureData[Taxonomy]."
+    # Import the developer/sh_taxonomy_qiime_ver9_99_25.07.2023.txt FeatureData[Taxonomy].
+    echo "Importing the ${ref_tax_file} FeatureData[Taxonomy]."
     qiime tools import \
      --type FeatureData[Taxonomy] \
-     --input-path sh_taxonomy_qiime_ver9_99_25.07.2023.txt \
-     --output-path unite-ver9-99-tax-25.07.2023.qza \
+     --input-path ${ref_tax_file} \
+     --output-path ${qiime2_ref_tax_file} \
      --input-format HeaderlessTSVTaxonomyFormat
 
     # Run qiime feature-classifier fit-classifier-naive-bayes.
     echo "Executing qiime feature-classifier fit-classifier-naive-bayes."
     qiime feature-classifier fit-classifier-naive-bayes \
-     --i-reference-reads unite-ver9-99-seqs-25.07.2023.qza \
-     --i-reference-taxonomy unite-ver9-99-tax-25.07.2023.qza \
-     --o-classifier unite-ver9-99-classifier-25.07.2023.qza
+     --i-reference-reads ${qiime2_ref_seq_file} \
+     --i-reference-taxonomy $qiime2_ref_tax_file} \
+     --o-classifier ${qiime2_cassifier_file}
   
     echo "The UNITE dada2 classifier database file is ready for use.";
     echo "Please use the following path for the classifier database file in the dada2_analysis_pipeline.sh shell script."
-    echo "${unite_dir}/unite-ver9-99-classifier-25.07.2023.qza"
+    echo "${qiime2_cassifier_file}"
     exit 0;
 fi
 
