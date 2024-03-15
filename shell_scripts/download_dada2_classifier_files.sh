@@ -7,7 +7,7 @@
 #SBATCH --mem=1G
 
 ## Example command
-#sh download_dada2_classifier_files.sh -i ITS_Unite_2023 -o ${HOME}/classifiers
+#sh download_dada2_classifier_files.sh -i ITS_Unite_2023 -o ${HOME} &> create_Unite_2023_classifier.log.txt
 
 ## Install qiime2 conda environment before using this script.
 #wget https://data.qiime2.org/distro/amplicon/qiime2-amplicon-2024.2-py38-linux-conda.yml
@@ -54,8 +54,8 @@ fi
 echo "Starting download script...."
 
 # Get the conda file path from source and activate the conda environment.
-source ~/.bash_profile
-##source ~/.bashrc
+#source ~/.bash_profile
+source ~/.bashrc
 
 ##source /home/muirheadk/miniconda3/etc/profile.d/conda.sh
 #source /home/AGR.GC.CA/muirheadk/miniconda3/etc/profile.d/conda.sh
@@ -118,7 +118,7 @@ elif [[ "${DATABASE_TYPE}" ==  "ITS_Unite_2017" ]];
 then
 
 	## UNITE ITS 2017 fasta.
-	
+
 	# Downloading the sh_qiime_release_01.12.2017.zip file.
 	echo "Downloading the sh_qiime_release_01.12.2017.zip file."
 	wget -O sh_qiime_release_01.12.2017.zip https://files.plutof.ut.ee/doi/0A/0B/0A0B25526F599E87A1E8D7C612D23AF7205F0239978CBD9C491767A0C1D237CC.zip 
@@ -163,7 +163,8 @@ then
     # The unite_20230725 directory.
     unite_dir="${classifier_dir}/unite_20230725"
     mkdir -p ${unite_dir}
-    
+    cd ${unite_dir}
+
     # Downloading the sh_qiime_release_25.07.2023.tgz file.
     echo "Downloading the sh_qiime_release_25.07.2023.tgz file."
     wget -O sh_qiime_release_25.07.2023.tgz https://files.plutof.ut.ee/public/orig/FB/78/FB78E30E44793FB02E5A4D3AE18EB4A6621A2FAEB7A4E94421B8F7B65D46CA4A.tgz
@@ -199,7 +200,7 @@ then
     echo "Executing qiime feature-classifier fit-classifier-naive-bayes."
     qiime feature-classifier fit-classifier-naive-bayes \
      --i-reference-reads ${qiime2_ref_seq_file} \
-     --i-reference-taxonomy $qiime2_ref_tax_file} \
+     --i-reference-taxonomy ${qiime2_ref_tax_file} \
      --o-classifier ${qiime2_cassifier_file}
   
     echo "The UNITE dada2 classifier database file is ready for use.";
