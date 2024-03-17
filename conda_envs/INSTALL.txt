@@ -21,6 +21,17 @@ conda activate qiime2-amplicon-2024.2
 ##conda env export > qiime2-2022.2_env.yaml
 conda env export > qiime2-amplicon-2024.2_env.yaml
 
+Add the following lines to your ~/.bashrc file. 
+
+export TMPDIR="${HOME}/tmp"
+mkdir -p $TMPDIR
+
+After you add the above lines use the following command to make it effective.
+
+source ~/.bashrc
+
+This will change the TMPDIR environment variable so you don't have to logout and log back in and it creates the directory so that qiime2 can use it.
+
 ## OR
 
 ### Option 2: Install the qiime conda environment using the qiime2-amplicon-2024.2_env.yaml file.
