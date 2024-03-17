@@ -62,6 +62,8 @@ source ~/.bashrc
 ##conda activate qiime2-2022.2
 conda activate qiime2-amplicon-2024.2
 
+##conda activate qiime2-amplicon-2023.9
+
 # echo $DATABASE_TYPE
 # echo $OUTPUT_DIR
 
@@ -172,15 +174,15 @@ then
     # Unzip the sh_qiime_release_25.07.2023.tgz file.
     echo "tar uncompress the sh_qiime_release_25.07.2023.tgz file."
     tar xvzf sh_qiime_release_25.07.2023.tgz
+    
+    ref_seq_fasta_file="${unite_dir}/developer/sh_refs_qiime_ver9_99_25.07.2023_dev.fasta"
+    qiime2_ref_seq_file="${unite_dir}/developer/unite-ver9-99-seqs-25.07.2023.qza"
+    
+    ref_tax_file="${unite_dir}/developer/sh_taxonomy_qiime_ver9_99_25.07.2023_dev.txt"
+    qiime2_ref_tax_file="${unite_dir}/developer/unite-ver9-99-tax-25.07.2023.qza"
+    
+    qiime2_cassifier_file="${unite_dir}/developer/unite-ver9-99-classifier-25.07.2023.qza"
 
-	ref_seq_fasta_file="${unite_dir}/developer/sh_refs_qiime_ver9_99_25.07.2023_dev.fasta"
-	qiime2_ref_seq_file="${unite_dir}/developer/unite-ver9-99-seqs-25.07.2023.qza"
-	
-	ref_tax_file="${unite_dir}/developer/sh_taxonomy_qiime_ver9_99_25.07.2023_dev.txt"
-	qiime2_ref_tax_file="${unite_dir}/developer/unite-ver9-99-tax-25.07.2023.qza"
-	
-	qiime2_cassifier_file="${unite_dir}/developer/unite-ver9-99-classifier-25.07.2023.qza"
-	
     # Import the developer/sh_refs_qiime_ver9_99_25.07.2023.fasta FeatureData[Sequence].
     echo "Importing the ${ref_seq_fasta_file} FeatureData[Sequence]."
     qiime tools import \
