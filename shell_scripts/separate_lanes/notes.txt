@@ -1,0 +1,60 @@
+header=$(head -n+1 drought_metadata_unix.txt | sed 's/Target/Amplicon/g')
+
+echo -e "${header}\tTarget\tProject" >> drought_metadata_unix_16S_515_926.txt
+
+IFS=$'\n'; for row in $(tail -n+3 drought_metadata_unix.txt); do echo $row; new_row=$(echo -e "${row}\t16S_515_926\tdrought"); echo ${new_row} >> drought_metadata_unix_16S_515_926.txt; done
+
+echo -e "#SampleID\tTarget\tProject" > fastq_file_lanes_metadata.txt; target_name="16S_515_926"; for dir in $(ls /home/AGR.GC.CA/muirheadk/drought_dataset/fastq_files); do echo $dir; project_name=$(echo $dir | rev | cut -d "-" -f1 | rev); for sample_name in $(ls /home/AGR.GC.CA/muirheadk/drought_dataset/fastq_files/${dir} | sed 's/_L001_R[1-2]_001\.fastq\.gz//g' | sort -V | uniq); do echo -e "${sample_name}\t${target_name}\t${project_name}" >> fastq_file_lanes_metadata.txt; done; done
+
+# Fastq file lists.
+head -n+1 fastq_file_lanes_metadata.txt > fastq_file_lane_LFJP3_metadata.txt; grep "LFJP3" < fastq_file_lanes_metadata.txt >> fastq_file_lane_LFJP3_metadata.txt
+
+head -n+1 fastq_file_lanes_metadata.txt > fastq_file_lane_LH5TF_metadata.txt; grep "LH5TF" < fastq_file_lanes_metadata.txt >> fastq_file_lane_LH5TF_metadata.txt
+
+head -n+1 fastq_file_lanes_metadata.txt > fastq_file_lane_LRBM9_metadata.txt; grep "LRBM9" < fastq_file_lanes_metadata.txt >> fastq_file_lane_LRBM9_metadata.txt
+
+# Preprocessing step.
+preprocessing_multitarget_LFJP3.sh &> run_preprocessing_multitarget_LFJP3.log.txt
+preprocessing_multitarget_LH5TF.sh &> run_preprocessing_multitarget_LH5TF.log.txt
+preprocessing_multitarget_LRBM9.sh &> run_preprocessing_multitarget_LRBM9.log.txt
+
+# Run the denoising step.
+sh dada2_denoise_multiproject_data_LFJP3.sh &> run_dada2_denoise_multiproject_data_LFJP3.log.txt
+sh dada2_denoise_multiproject_data_LH5TF.sh &> run_dada2_denoise_multiproject_data_LH5TF.log.txt
+sh dada2_denoise_multiproject_data_LRBM9.sh &> run_dada2_denoise_multiproject_data_LRBM9.log.txt
+
+# Making the sample_id.txt list for filtering the qza files for the merging step.
+echo "#SampleID" > LFJP3_16S_515_926_sample_ids.txt; grep "LFJP3" < drought_metadata_unix_16S_515_926.txt | cut -f1 | sort -V | sed 's/_L001//g' | grep -v "Undetermined_S0" >> LFJP3_16S_515_926_sample_ids.txt
+
+echo "#SampleID" > LH5TF_16S_515_926_sample_ids.txt; grep "LH5TF" < drought_metadata_unix_16S_515_926.txt | cut -f1 | sort -V | sed 's/_L001//g' | grep -v "Undetermined_S0" >> LH5TF_16S_515_926_sample_ids.txt
+
+echo "#SampleID" > LRBM9_16S_515_926_sample_ids.txt; grep "LRBM9" < drought_metadata_unix_16S_515_926.txt | cut -f1 | sort -V | sed 's/_L001//g' | grep -v "Undetermined_S0" >> LRBM9_16S_515_926_sample_ids.txt
+
+# Filter after denoising step to grab by project name and target.
+sh filter_denoising_step.sh &> run_filter_denoising_step.log.txt
+
+# Merge denoised table and representative sequences so that we can run the classifier pipeline.
+sh merge_dada2_denoised_table_seqs.sh &> run_merge_dada2_denoised_table_seqs.log.txt
+
+# Classify the sequences using the classifier.
+sh dada2_multiproject_pipeline.sh &> run_dada2_multiproject_pipeline.log.txt
+
+# Generate files for iCAMP.
+
+# Generate newick tree.
+sh generate_phylogenetic_tree.sh &> run_generate_phylogenetic_tree.log.txt
+
+# Unrooted tree file.
+/home/AGR.GC.CA/muirheadk/drought_dataset/drought_dada2_analysis/merged_lanes/phylogenetic_tree_files/exported_unrooted_tree/tree.nwk
+
+# Rooted tree file.
+/home/AGR.GC.CA/muirheadk/drought_dataset/drought_dada2_analysis/merged_lanes/phylogenetic_tree_files/exported_rooted_tree/tree.nwk
+
+# The OTU table file.
+tail -n+2 /home/AGR.GC.CA/muirheadk/drought_dataset/drought_dada2_analysis/merged_lanes/drought/dada2_analysis/drought_16S_515_926/qiime2/phyloseq.tsv | sed 's/#OTU ID/SpeciesID/g' > otus.txt
+
+# The classification file.
+echo -e "SpeciesID\tDomain\tPhylum\tClass\tOrder\tFamily\tGenus" > classification.txt
+tail -n +2 /home/AGR.GC.CA/muirheadk/drought_dataset/drought_dada2_analysis/merged_lanes/drought/dada2_analysis/drought_16S_515_926/qiime2/taxonomy_exported_dada2/taxonomy.tsv | less
+
+
