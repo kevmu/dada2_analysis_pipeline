@@ -33,6 +33,10 @@ echo $OUTPUT_DIR
 if [[ "${DATABASE_TYPE}" == 'silva_16S_138_99_515_806' ]];
 then
 	echo "Downloading the silva_16S_138_99_515_806 database."
+elif [[ "${DATABASE_TYPE}" == 'silva_16S_138_99_515_926' ]];
+then
+        echo "Downloading the silva_16S_138_99_515_926 database."
+
 elif [[ "${DATABASE_TYPE}" == 'ITS_Unite_2017' ]];
 then
 	echo "Downloading the ITS_Unite_2017 database."
@@ -41,7 +45,7 @@ then
     echo "Downloading the ITS_Unite_2023 database."
 else
 	echo "You entered ${DATABASE_TYPE} for the database type."
-	echo "Please enter silva_16S_138_99_515_806 for the Silva 138 16S rRNA 515/806 classifier or ITS_Unite_2017 or ITS_Unite_2023 for other versions of ITS Unite fungal classifier! Use the -i parameter option for the DATABASE_TYPE."
+	echo "Please enter silva_16S_138_99_515_806 for the Silva 138 16S rRNA 515/806 classifier or silva_16S_138_99_515_926 for the Silva 138 16S rRNA 515/926 classifier or ITS_Unite_2017 or ITS_Unite_2023 for other versions of ITS Unite fungal classifier! Use the -i parameter option for the DATABASE_TYPE."
 	exit 0;
 fi
 
@@ -87,7 +91,6 @@ if [[ "${DATABASE_TYPE}" == "silva_16S_138_99_515_806" ]];
 then
 	## SILVA 16S rRNA fasta.
 	
-
 	# Create the silva output directory silva_dir if it does not exist.
 	silva_dir="${classifier_dir}/silva_16S_138_99_515_806"
 	if [ ! -d $silva_dir ] 
@@ -114,8 +117,102 @@ then
     echo "The SILVA dada2 classifier database file is ready for use.";
     echo "Please use the following path for the classifier database file in the dada2_analysis_pipeline.sh shell script."
     echo "${silva_dir}/silva-138-99-classifier-515-806.qza"
+
     exit 0;
-    
+
+# Get the most recent classifier.
+elif [[ "${DATABASE_TYPE}" == "silva_16S_138_99_515_926" ]];
+then
+        ## SILVA 16S rRNA fasta.
+
+    	# 16S 515/926 adapters.
+        adapter1_f="GTGYCAGCMGCCGCGGTAA"
+        adapter2_f="TTACCGCGGCKGCTGRCAC"
+        adapter1_r="CCGYCAATTYMTTTRAGTTT"
+        adapter2_r="AAACTYAAAKRAATTGRCGG"
+
+        # Create the silva output directory silva_dir if it does not exist.
+        silva_dir="${classifier_dir}/silva_16S_138_99_515_926"
+        if [ ! -d $silva_dir ]
+        then
+                mkdir -p $silva_dir
+        fi
+
+        cd ${silva_dir}
+
+	# The full length silva 16S sequences qza file.
+	silva_full_seqs_qza_file="silva-138-99-seqs.qza"
+
+	# The full length silva 16S taxonomy aza file.
+       	silva_full_tax_qza_file="silva-138-99-tax.qza"
+
+        # Downloading the full length 16S silva-138-99-seqs.qza file.
+        echo "Downloading the silva-138-99-seqs.qza file."
+        wget -O ${silva_full_seqs_qza_file}  https://data.qiime2.org/2024.10/common/silva-138-99-seqs.qza 
+
+        # Downloading the full length 16S silva-138-99-tax.qza file.
+        echo "Downloading the silva-138-99-tax.qza file."
+        wget -O ${silva_full_tax_qza_file} https://data.qiime2.org/2024.10/common/silva-138-99-tax.qza
+
+	# The 16S Silva 138 nr 99 515/926 sequences file. 
+	silva_seqs_qza_file="silva-138-99-seqs-515-926.qza"
+
+	# The 16S Silva 138 nr 99 515/926 taxonomy file.
+        silva_tax_qza_file="silva-138-99-tax-515-926.qza"
+
+	# The 16S Silva 138 nr 99 515/926 classifier file.
+	silva_classifier_qza_file="silva-138-99-classifier-515-926.qza"
+
+	# Trim the sequences using the 515/926 adapters. 
+	echo "qiime feature-classifier extract-reads \
+	--i-sequences ${silva_full_seqs_qza_file} \
+        --p-f-primer ${adapter1_f} \
+    	--p-r-primer ${adapter1_r} \
+    	--p-n-jobs 10 \
+	--p-min-length 250 \
+        --p-max-length 400 \
+	--p-read-orientation 'forward' \
+    	--o-reads ${silva_seqs_qza_file}"
+	
+	qiime feature-classifier extract-reads \
+	--i-sequences ${silva_full_seqs_qza_file} \
+        --p-f-primer ${adapter1_f} \
+    	--p-r-primer ${adapter1_r} \
+    	--p-n-jobs 10 \
+        --p-min-length 250 \
+        --p-max-length 400 \
+	--p-read-orientation 'forward' \
+    	--o-reads ${silva_seqs_qza_file}
+	
+	# Filtering the taxonomy file to have same ids as the sequences file.
+	echo "qiime rescript filter-taxa \
+        --i-taxonomy ${silva_full_tax_qza_file} \
+        --m-ids-to-keep-file ${silva_seqs_qza_file} \
+        --o-filtered-taxonomy ${silva_tax_qza_file}"
+
+	qiime rescript filter-taxa \
+	--i-taxonomy ${silva_full_tax_qza_file} \
+	--m-ids-to-keep-file ${silva_seqs_qza_file} \
+	--o-filtered-taxonomy ${silva_tax_qza_file}
+
+        # Run qiime feature-classifier fit-classifier-naive-bayes.
+        echo "Executing qiime feature-classifier fit-classifier-naive-bayes."
+        
+	echo " qiime feature-classifier fit-classifier-naive-bayes \
+        --i-reference-reads ${silva_seqs_qza_file} \
+        --i-reference-taxonomy ${silva_tax_qza_file} \
+        --o-classifier ${silva_classifier_qza_file}"
+
+	qiime feature-classifier fit-classifier-naive-bayes \
+        --i-reference-reads ${silva_seqs_qza_file} \
+        --i-reference-taxonomy ${silva_tax_qza_file} \
+        --o-classifier ${silva_classifier_qza_file}
+
+    echo "The SILVA dada2 classifier database file is ready for use.";
+    echo "Please use the following path for the classifier database file in the dada2_analysis_pipeline.sh shell script."
+    echo "${silva_dir}/${silva_classifier_qza_file}"
+    exit 0;
+ 
 elif [[ "${DATABASE_TYPE}" ==  "ITS_Unite_2017" ]];
 then
 
