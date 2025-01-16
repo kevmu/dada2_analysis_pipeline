@@ -96,4 +96,21 @@ for dada2_seq_id in phyloseq_abund_data:
     if(dada2_seq_id in tax_data):
         merged_phyloseq_abund_tax_tsv_writer.writerow(tax_data[dada2_seq_id] + phyloseq_abund_data[dada2_seq_id][1:])
 
-        
+phyloseq_tax_tsv_outfile = os.path.join(output_dir, "phyloseq_tax.tsv")
+phyloseq_tax_tsv_output_file = open(phyloseq_tax_tsv_outfile, 'w+')
+phyloseq_tax_tsv_writer = csv.writer(phyloseq_tax_tsv_output_file, delimiter='\t', quotechar='', quoting=csv.QUOTE_NONE)
+phyloseq_tax_tsv_writer.writerow(["#OTUID","taxonomy","confidence"])
+for dada2_seq_id in phyloseq_abund_data:
+    print(dada2_seq_id)
+    if(dada2_seq_id in tax_data):
+        phyloseq_tax_tsv_writer.writerow(tax_data[dada2_seq_id])
+
+phyloseq_abund_tsv_outfile = os.path.join(output_dir, "phyloseq_abund.tsv")
+phyloseq_abund_tsv_output_file = open(phyloseq_abund_tsv_outfile, 'w+')
+phyloseq_abund_tsv_writer = csv.writer(phyloseq_abund_tsv_output_file, delimiter='\t', quotechar='', quoting=csv.QUOTE_NONE)
+phyloseq_abund_tsv_writer.writerow(phyloseq_abund_header)
+for dada2_seq_id in phyloseq_abund_data:
+    print(dada2_seq_id)
+    phyloseq_abund_tsv_writer.writerow(phyloseq_abund_data[dada2_seq_id])
+
+
