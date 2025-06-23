@@ -17,9 +17,9 @@ mafft_align_file="${output_dir}/aligned_rep_seqs.qza"
 echo "qiime alignment mafft \
 --i-sequences ${dada2_rep_seqs_file} \
 --o-alignment ${mafft_align_file}"
-#qiime alignment mafft \
-#--i-sequences ${dada2_rep_seqs_file} \
-#--o-alignment ${mafft_align_file}
+qiime alignment mafft \
+--i-sequences ${dada2_rep_seqs_file} \
+--o-alignment ${mafft_align_file}
 
 # The masked alignment file.
 masked_align_file="${output_dir}/masked_aligned_rep_seqs.qza"
@@ -28,9 +28,9 @@ masked_align_file="${output_dir}/masked_aligned_rep_seqs.qza"
 echo "qiime alignment mask \
 --i-alignment ${mafft_align_file} \
 --o-masked-alignment ${masked_align_file}"
-#qiime alignment mask \
-#--i-alignment ${mafft_align_file} \
-#--o-masked-alignment ${masked_align_file}
+qiime alignment mask \
+--i-alignment ${mafft_align_file} \
+--o-masked-alignment ${masked_align_file}
 
 # The unrooted tree file.
 unrooted_tree_file="${output_dir}/unrooted_tree.qza"
@@ -39,20 +39,20 @@ unrooted_tree_file="${output_dir}/unrooted_tree.qza"
 echo "qiime phylogeny fasttree \
 --i-alignment ${masked_align_file} \
 --o-tree ${unrooted_tree_file}"
-#qiime phylogeny fasttree \
-#--i-alignment ${masked_align_file} \
-#--o-tree ${unrooted_tree_file}
+qiime phylogeny fasttree \
+--i-alignment ${masked_align_file} \
+--o-tree ${unrooted_tree_file}
 
 # The rooted tree file.
 rooted_tree_file="${output_dir}/rooted_tree.qza"
 
 # Make the midpoint the root of the tree.
-echo "qiime phylogeny midpoint-root\
+echo "qiime phylogeny midpoint-root \
 --i-tree ${unrooted_tree_file} \
 --o-rooted-tree ${rooted_tree_file}"
-#qiime phylogeny midpoint-root \
-#--i-tree ${unrooted_tree_file} \
-#--o-rooted-tree ${rooted_tree_file}
+qiime phylogeny midpoint-root \
+--i-tree ${unrooted_tree_file} \
+--o-rooted-tree ${rooted_tree_file}
 
 # Exporting the mafft alignment file.
 exported_mafft_align_dir="${output_dir}/exported_mafft_align_file"
